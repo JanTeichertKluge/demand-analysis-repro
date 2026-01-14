@@ -9,6 +9,7 @@ This repository contains the code, configurations, and output folders used for t
 
 ## Data availability
 - Input prediction/embedding CSVs referenced in `paths_config.yaml` are **not stored in this repository** because they are derived from proprietary product data. But the output data after preprocessing are included and are sufficient to reproduce all results.
+- Some intermediate datasets hosted on Huggingface used during the analysis are anonymized in the code.
 - No raw data are redistributed here. If you need access during review, please contact the authors.
 
 ## Computational environment
