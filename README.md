@@ -12,15 +12,16 @@ This repository contains the code, configurations, and output folders used for t
 - No raw data are redistributed here. If you need access during review, please contact the authors.
 
 ## Computational environment
-- Language: Python (tested with 3.10+).
-- Key packages: pandas, numpy, scikit-learn, statsmodels, linearmodels, doubleml, scipy, pyyaml, jupyter.
-- Hardware: standard workstation; clustering and PCA steps benefit from ≥16 GB RAM.
-- Set a virtual environment (e.g., `python -m venv .venv` then `pip install -U pip` and install the packages above).
+- Language: Python (tested with 3.11.11).
+- Install dependencies via the provided `requirements.txt` inside each `code` directory (run `pip install -r requirements.txt` from that folder after activating your virtual environment).
+- Hardware: 
+    * Processor: 13th Gen Intel(R) Core(TM) i7-13620H, 1700 Mhz, 10 Core(s), 16 Logical Processor(s)
+    * RAM: 16 GB
+    * OS Name: Microsoft Windows 11 Home
 
 ## How to reproduce the main results
-1) **Prepare data**: Populate the prediction/embedding CSVs referenced in `main/code/utils/paths_config.yaml` (see `main/README.md` for details).
+1) **Use provided datasets**: The processed datasets are already in `main/data`. You can skip the `01_create_dataset.ipynb` notebook unless you need to regenerate intermediates.
 2) **Run notebooks in order** (from `main/code`):
-	- `01_create_dataset.ipynb`
 	- `02_cluster_centroid_products.ipynb`
 	- `03_1_predictive_performance_txt_img.ipynb`
 	- `03_2_predictive_performance_txt.ipynb`
@@ -29,19 +30,6 @@ This repository contains the code, configurations, and output folders used for t
 
 ## How to reproduce appendix results
 Follow the instructions in `appendix/README.md`. Each appendix module has its own notebook sequence and output folder.
-
-## Repository layout (high level)
-- `main/` — primary analysis notebooks, utilities, outputs.
-- `appendix/` — supplemental analyses (A2–A4) with their own utilities and outputs.
-- `manuscript/` — placeholder for paper materials.
-- `output/` — top-level output aggregation (mirrors main results).
-
-## ACC-style summary (readers’ view)
-- **Data**: Proprietary prediction/embedding CSVs required; not bundled. Contact authors for review-time access.
-- **Code**: All analysis code/notebooks are included in this repository.
-- **Instructions**: Execution order and expected outputs documented in this README and subdirectory READMEs.
-- **Computing environment**: Python 3.10+ with the packages listed above; no GPUs required.
-- **Reproducibility status**: Deterministic given the supplied CSV inputs and fixed seeds in scikit-learn; reruns should match reported outputs.
 
 ## Contact
 For questions or review-time data access, please reach out to the corresponding author listed in the manuscript.

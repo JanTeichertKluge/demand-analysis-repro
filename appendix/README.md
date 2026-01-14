@@ -5,7 +5,7 @@ This folder hosts the supplemental experiments reported in the appendix. Each su
 ## A2: Substitute Prices
 - Notebook: `code/A2_substitute_prices/A2_evaluation_substitute_prices.ipynb`.
 - Purpose: evaluate substitute-price construction using nearest-neighbor embeddings.
-- Inputs: prediction/embedding CSVs expected by the notebook (if you relocate them, update the paths inside the notebook before execution).
+- Inputs: prediction/embedding CSVs from the `main/data` directory (if you relocate them, update the paths inside the notebook before execution).
 - Output: tables saved under `output/A2_substitute_prices`.
 
 ## A3: Dimensionality Reduction via Neural Nets
@@ -17,14 +17,10 @@ This folder hosts the supplemental experiments reported in the appendix. Each su
 ## A4: Replication on Clothes Data
 - Notebooks: `code/A4_replication_clothes_data/01_create_dataset.ipynb`, `02_cluster_centroid_products.ipynb`, `03_predictive_performance.ipynb`, `04_evaluation.ipynb`.
 - Utilities: `code/A4_replication_clothes_data/utils/paths_config.yaml`, `utils_data2.py`, `utils_models.py`.
-- Execution order matches the numbering above; run each notebook top-to-bottom.
+- Execution order matches the numbering above, run each notebook top-to-bottom.
 - Inputs: prediction/embedding CSVs referenced in the A4 `paths_config.yaml` file (update paths if your files are elsewhere).
 - Outputs: generated under `output/A4_replication_clothes_data` (cluster results in `01_output_cluster`, evaluation tables in `02_output_evaluation`).
 
 ## Environment
-Use the same Python environment as the main analysis (pandas, numpy, scikit-learn, statsmodels, linearmodels, doubleml, scipy, pyyaml, jupyter). Some notebooks may require additional plotting libraries; install as prompted.
-
-## General tips
-- Ensure all required CSVs are present before running notebooks to avoid `FileNotFoundError`.
-- Paths are resolved relative to each notebook’s directory; adjust YAMLs if you reorganize inputs.
-- Keep seeds fixed in scikit-learn for deterministic clustering and PCA results.
+- Language: Python (tested with 3.11.11).
+- Install dependencies via the provided `requirements.txt` inside each `code` directory (run `pip install -r requirements.txt` from that folder after activating your virtual environment).
