@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 
@@ -85,7 +86,7 @@ def load_pred_and_emb(
       If load_root_datasets=True, it also returns the large root datasets in
       results["root_datasets"].
     """
-
+    import os
     # 1. Load the YAML config (paths)
     config = load_config(config_path)
 
@@ -113,8 +114,10 @@ def load_pred_and_emb(
             dataset_config_diff = None
 
     # 4. Load "leveled" data
-    train_data_levl = pd.read_csv(dataset_config_levl["train"])
-    val_data_levl = pd.read_csv(dataset_config_levl["val"])
+    train_path = os.path.abspath(os.path.join(os.getcwd(), *dataset_config_levl["train"].split("/")))
+    val_path = os.path.abspath(os.path.join(os.getcwd(), *dataset_config_levl["val"].split("/")))
+    train_data_levl = pd.read_csv(train_path)
+    val_data_levl   = pd.read_csv(val_path)
 
     # 5. Load "diff" data
     if add_diff_data:

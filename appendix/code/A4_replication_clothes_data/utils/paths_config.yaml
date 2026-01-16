@@ -1,15 +1,15 @@
 txtimg:
   time_independent:
     128:
-      train: "../data/A4_replication_clothes_data/predictions/ext/train_pred_model-2025-12-23-embdim=None_time_independent_txtimg_mod4-epoch=018-val_combined_loss=0.4830_txtimg_dim=128_proj_emb_step=.csv"
-      val:   "../data/A4_replication_clothes_data/predictions/ext/val_pred_model-2025-12-23-embdim=None_time_independent_txtimg_mod4-epoch=018-val_combined_loss=0.4830_txtimg_dim=128_proj_emb_step=.csv"
+      train: "../../data/A4_replication_clothes_data/predictions/train_pred_model-2025-12-23-embdim=None_time_independent_txtimg_mod4-epoch=018-val_combined_loss=0.4830_txtimg_dim=128_proj_emb_step=.zip"
+      val:   "../../data/A4_replication_clothes_data/predictions/val_pred_model-2025-12-23-embdim=None_time_independent_txtimg_mod4-epoch=018-val_combined_loss=0.4830_txtimg_dim=128_proj_emb_step=.zip"
     256:
-      train: "../data/A4_replication_clothes_data/predictions/ext/train_pred_model-2025-12-23-embdim=None_time_independent_txtimg_mod4-epoch=018-val_combined_loss=0.4830_txtimg_dim=256_proj_emb_step=.csv"
-      val:   "../data/A4_replication_clothes_data/predictions/ext/val_pred_model-2025-12-23-embdim=None_time_independent_txtimg_mod4-epoch=018-val_combined_loss=0.4830_txtimg_dim=256_proj_emb_step=.csv"
+      train: "../../data/A4_replication_clothes_data/predictions/train_pred_model-2025-12-23-embdim=None_time_independent_txtimg_mod4-epoch=018-val_combined_loss=0.4830_txtimg_dim=256_proj_emb_step=.zip"
+      val:   "../../data/A4_replication_clothes_data/predictions/val_pred_model-2025-12-23-embdim=None_time_independent_txtimg_mod4-epoch=018-val_combined_loss=0.4830_txtimg_dim=256_proj_emb_step=.zip"
   lag1:
     128:
-      train: "../data/A4_replication_clothes_data/predictions/ext/train_pred_model-2025-12-01-embdim=None_lag1_txtimg_mod4-epoch=004-val_combined_loss=0.4521_txtimg_dim=128_proj_emb_step=.csv"
-      val:   "../data/A4_replication_clothes_data/predictions/ext/val_pred_model-2025-12-01-embdim=None_lag1_txtimg_mod4-epoch=004-val_combined_loss=0.4521_txtimg_dim=128_proj_emb_step=.csv"
+      train: "../../data/A4_replication_clothes_data/predictions/train_pred_model-2025-12-01-embdim=None_lag1_txtimg_mod4-epoch=004-val_combined_loss=0.4521_txtimg_dim=128_proj_emb_step=.zip"
+      val:   "../../data/A4_replication_clothes_data/predictions/val_pred_model-2025-12-01-embdim=None_lag1_txtimg_mod4-epoch=004-val_combined_loss=0.4521_txtimg_dim=128_proj_emb_step=.zip"
     256:
-      train: "../data/A4_replication_clothes_data/predictions/ext/train_pred_model-2025-12-01-embdim=None_lag1_txtimg_mod4-epoch=004-val_combined_loss=0.4521_txtimg_dim=256_proj_emb_step=.csv"
-      val:   "../data/A4_replication_clothes_data/predictions/ext/val_pred_model-2025-12-01-embdim=None_lag1_txtimg_mod4-epoch=004-val_combined_loss=0.4521_txtimg_dim=256_proj_emb_step=.csv"
+      train: "../../data/A4_replication_clothes_data/predictions/train_pred_model-2025-12-01-embdim=None_lag1_txtimg_mod4-epoch=004-val_combined_loss=0.4521_txtimg_dim=256_proj_emb_step=.zip"
+      val:   "../../data/A4_replication_clothes_data/predictions/val_pred_model-2025-12-01-embdim=None_lag1_txtimg_mod4-epoch=004-val_combined_loss=0.4521_txtimg_dim=256_proj_emb_step=.zip"
