@@ -73,8 +73,8 @@ def lin_model(
             "std err": std_err,
             "t": z_values,
             "P>|t|": p_values,
-            f"[{alpha/2*100:.1f}%": ci[0],  # Lower bound
-            f"{(1-alpha/2)*100:.1f}%]": ci[1],  # Upper bound
+            f"[{alpha / 2 * 100:.1f}%": ci[0],  # Lower bound
+            f"{(1 - alpha / 2) * 100:.1f}%]": ci[1],  # Upper bound
         }
     )
 
@@ -114,8 +114,8 @@ def summarize_lin_model(results, level=0.95):
             "std err": std_err,
             "t": z_values,
             "P>|t|": p_values,
-            f"{alpha/2*100:.1f}%": ci[0],  # Lower bound
-            f"{(1-alpha/2)*100:.1f}%": ci[1],  # Upper bound
+            f"{alpha / 2 * 100:.1f}%": ci[0],  # Lower bound
+            f"{(1 - alpha / 2) * 100:.1f}%": ci[1],  # Upper bound
         }
     )
 
@@ -144,8 +144,8 @@ def summarize_dml(dml_obj, level=0.95):
             "std err": std_err,
             "t": t_values,
             "P>|t|": p_values,
-            f"{(1 - level)/2 * 100:.1f}%": ci_lower,  # Lower bound for confidence interval
-            f"{(1 + level)/2 * 100:.1f}%": ci_upper,  # Upper bound for confidence interval
+            f"{(1 - level) / 2 * 100:.1f}%": ci_lower,  # Lower bound for confidence interval
+            f"{(1 + level) / 2 * 100:.1f}%": ci_upper,  # Upper bound for confidence interval
         }
     )
 
