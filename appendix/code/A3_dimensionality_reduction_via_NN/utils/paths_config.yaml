@@ -1,0 +1,15 @@
+txtimg:
+  time_independent:
+    128:
+      train: "../../data/A3_dimensionality_reduction_via_NN/data/train_pred_model-2025-11-03-embdim=None_time_independent_txtimg_mod4-epoch=024-val_combined_loss=0.3453_txtimg_dim=128.zip"
+      val:   "../../data/A3_dimensionality_reduction_via_NN/data/val_pred_model-2025-11-03-embdim=None_time_independent_txtimg_mod4-epoch=024-val_combined_loss=0.3453_txtimg_dim=128.zip"
+    256:
+      train: "../../data/A3_dimensionality_reduction_via_NN/data/train_pred_model-2025-11-03-embdim=None_time_independent_txtimg_mod4-epoch=024-val_combined_loss=0.3453_txtimg_dim=256.zip"
+      val:   "../../data/A3_dimensionality_reduction_via_NN/data/val_pred_model-2025-11-03-embdim=None_time_independent_txtimg_mod4-epoch=024-val_combined_loss=0.3453_txtimg_dim=256.zip"
+  lag1:
+    128:
+      train: "../../data/A3_dimensionality_reduction_via_NN/data/train_pred_model-2025-10-15-embdim=None_lag1_txtimg_mod4-epoch=009-val_combined_loss=0.3842_txtimg_dim=128.zip"
+      val:   "../../data/A3_dimensionality_reduction_via_NN/data/val_pred_model-2025-10-15-embdim=None_lag1_txtimg_mod4-epoch=009-val_combined_loss=0.3842_txtimg_dim=128.zip"
+    256:
+      train: "../../data/A3_dimensionality_reduction_via_NN/data/train_pred_model-2025-10-15-embdim=None_lag1_txtimg_mod4-epoch=009-val_combined_loss=0.3842_txtimg_dim=256.zip"
+      val:   "../../data/A3_dimensionality_reduction_via_NN/data/val_pred_model-2025-10-15-embdim=None_lag1_txtimg_mod4-epoch=009-val_combined_loss=0.3842_txtimg_dim=256.zip"
