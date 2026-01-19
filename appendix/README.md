@@ -3,15 +3,15 @@
 This folder hosts the supplemental experiments reported in the appendix. Each subfolder contains its own notebooks and, where needed, a `utils` directory. Place required prediction/embedding CSVs in the locations referenced by the respective `paths_config.yaml` files.
 
 ## A2: Substitute Prices
-- Notebook: `code/A2_substitute_prices/A2_evaluation_substitute_prices.ipynb`.
+- Notebook: `code/A2_substitute_prices/01_evaluation_substitute_prices.ipynb`.
 - Purpose: evaluate substitute-price construction using nearest-neighbor embeddings.
 - Inputs: prediction/embedding CSVs from the `main/data` directory (if you relocate them, update the paths inside the notebook before execution).
 - Output: tables saved under `output/A2_substitute_prices`.
 
 ## A3: Dimensionality Reduction via Neural Nets
-- Notebooks: `code/A3_dimensionality_reduction_via_NN/A3_create_dataset.ipynb`, `A3_evaluation.ipynb`.
+- Notebooks: `code/A3_dimensionality_reduction_via_NN/01_create_dataset.ipynb`, `02_evaluation.ipynb`.
 - Purpose: build reduced-dimensional embeddings and assess predictive quality.
-- Inputs: derived CSVs placed according to notebook instructions (use the relative `data/A3_dimensionality_reduction_via_NN` folder).
+- Inputs: derived CSVs placed according to notebook instructions (use `appendix/data/A3_dimensionality_reduction_via_NN`).
 - Output: evaluation results under `output/A3_dimensionality_reduction_via_NN`.
 
 ## A4: Replication on Clothes Data

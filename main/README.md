@@ -12,11 +12,12 @@ This folder reproduces the primary results reported in the paper. All steps are 
 
 ## Execution order
 Run the notebooks in this order after ensuring the CSVs exist at the configured paths:
-1. `code/01_create_dataset.ipynb`
-2. `code/02_cluster_centroid_products.ipynb`
-3. `code/03_1_predictive_performance_txt_img.ipynb`
-4. `code/03_2_predictive_performance_txt.ipynb`
-5. `code/04_evaluation.ipynb`
+1. `code/01_1_create_dataset_txt_img.ipynb` (optional, regenerates text+image datasets)
+2. `code/01_2_create_dataset_txt.ipynb` (optional, regenerates text-only datasets)
+3. `code/02_cluster_centroid_products.ipynb`
+4. `code/03_1_predictive_performance_txt_img.ipynb`
+5. `code/03_2_predictive_performance_txt.ipynb`
+6. `code/04_evaluation.ipynb`
 
 Execute each notebook top-to-bottom. The utilities in `code/utils` are imported by the notebooks; no additional scripts are required.
 

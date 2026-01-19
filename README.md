@@ -8,9 +8,9 @@ This repository contains the code, configurations, and output folders used for t
 - **Outputs**: generated figures/tables are written to `output/` folders under each track (main and appendix).
 
 ## Data availability
-- Input prediction/embedding CSVs referenced in `paths_config.yaml` are **not stored in this repository** because they are derived from proprietary product data. But the output data after preprocessing are included and are sufficient to reproduce all results.
+- Prediction/embedding files referenced in `paths_config.yaml` are stored in this repository under `main/data/predictions` and `appendix/data/**`. These files are derived from proprietary product data.
 - Some intermediate datasets hosted on Huggingface used during the analysis are anonymized in the code.
-- No raw data are redistributed here. If you need access during review, please contact the authors.
+- No raw product data are redistributed here. If you need access during review, please contact the authors.
 
 ## Computational environment
 - Language: Python (tested with 3.11.11).
@@ -21,8 +21,10 @@ This repository contains the code, configurations, and output folders used for t
     * OS Name: Microsoft Windows 11 Home
 
 ## How to reproduce the main results
-1) **Use provided datasets**: The processed datasets are already in `main/data`. You can skip the `01_create_dataset.ipynb` notebook unless you need to regenerate intermediates.
+1) **Use provided datasets**: The processed datasets are already in `main/data`. You can skip the dataset creation notebooks unless you need to regenerate intermediates.
 2) **Run notebooks in order** (from `main/code`):
+	- `01_1_create_dataset_txt_img.ipynb` (optional)
+	- `01_2_create_dataset_txt.ipynb` (optional)
 	- `02_cluster_centroid_products.ipynb`
 	- `03_1_predictive_performance_txt_img.ipynb`
 	- `03_2_predictive_performance_txt.ipynb`
