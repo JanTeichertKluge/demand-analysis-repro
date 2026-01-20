@@ -1,6 +1,6 @@
 # Appendix Analyses (Supplementary Results)
 
-This folder hosts the supplemental experiments reported in the appendix. Each subfolder contains its own notebooks and, where needed, a `utils` directory. Place required prediction/embedding CSVs in the locations referenced by the respective `paths_config.yaml` files.
+This folder hosts the supplemental experiments reported in the appendix.
 
 ## A2: Substitute Prices
 - Notebook: `code/A2_substitute_prices/01_evaluation_substitute_prices.ipynb`.
@@ -23,4 +23,4 @@ This folder hosts the supplemental experiments reported in the appendix. Each su
 
 ## Environment
 - Language: Python (tested with 3.11.11).
-- Install dependencies via the provided `requirements.txt` inside each `code` directory (run `pip install -r requirements.txt` from that folder after activating your virtual environment).
+- Install dependencies via the provided `requirements.txt` inside each `code` directory.

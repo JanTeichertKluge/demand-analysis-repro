@@ -4,11 +4,10 @@ This folder reproduces the primary results reported in the paper. All steps are 
 
 ## Inputs
 - Prediction and embedding CSVs for text-only and text+image models. Relative paths are configured in `code/utils/paths_config.yaml`. Update these paths if you store the files elsewhere.
-- No raw product data are redistributed here; only derived prediction/embedding files are needed.
+- No raw product data are redistributed here, only processed data.
 
 ## Environment
-- Python 3.10+ with pandas, numpy, scikit-learn, statsmodels, linearmodels, doubleml, scipy, pyyaml, jupyter.
-- Optional: set `PYTHONHASHSEED` and scikit-learn random states to keep clustering results identical.
+- Python 3.11.11 with dependencies listed in `code/requirements.txt`. 
 
 ## Execution order
 Run the notebooks in this order after ensuring the CSVs exist at the configured paths:
@@ -19,11 +18,8 @@ Run the notebooks in this order after ensuring the CSVs exist at the configured 
 5. `code/03_2_predictive_performance_txt.ipynb`
 6. `code/04_evaluation.ipynb`
 
-Execute each notebook top-to-bottom. The utilities in `code/utils` are imported by the notebooks; no additional scripts are required.
-
 ## Outputs
-- Intermediate artifacts are written under `output/` (e.g., clusters, prediction diagnostics).
-- Final evaluation tables, including `output/04_evaluation/sorted_effects.csv`, are produced by `04_evaluation.ipynb`.
+- Intermediate artifacts as well as final results are written under `output/` (e.g., clusters, prediction diagnostics).
 
 ## Notes
 - If you relocate prediction files, update `code/utils/paths_config.yaml` before running.
