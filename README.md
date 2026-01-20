@@ -29,7 +29,7 @@ This repository contains the code, configurations, and output folders used for t
 	- `03_1_predictive_performance_txt_img.ipynb`
 	- `03_2_predictive_performance_txt.ipynb`
 	- `04_evaluation.ipynb`
-3) **Check outputs**: notebooks write results to `main/output`, including `04_evaluation/sorted_effects.csv`.
+3) **Check outputs**: notebooks write results to `main/output`.
 
 ## How to reproduce appendix results
 Follow the instructions in `appendix/README.md`. Each appendix module has its own notebook sequence and output folder.
