@@ -188,6 +188,82 @@ def get_cluster(embeddings, n_clusters, n_init=10):
     kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=n_init)
     return kmeans.fit_predict(embeddings), kmeans.cluster_centers_
 
+def get_spherical_clusters(
+    embeddings,
+    n_clusters,
+    n_init=10,
+    max_iter=500,
+    tol=1e-4,
+    random_state=42,
+):
+    from sklearn.preprocessing import normalize
+    from tqdm import tqdm
+
+    if hasattr(embeddings, "values"):
+        X = embeddings.values
+    else:
+        X = embeddings
+
+    rng = np.random.default_rng(random_state)
+    best_inertia = np.inf
+    best_labels = None
+    best_centers = None
+
+    for _ in tqdm(range(n_init) , desc="Spherical K-Means Inits"):
+        # --- K-Means++ Initialization ---
+        centers = np.empty((n_clusters, X.shape[1]), dtype=float)
+        idx = rng.integers(0, X.shape[0])
+        centers[0] = X[idx]
+        closest_dist_sq = np.sum((X - centers[0]) ** 2, axis=1)
+        
+        for c in range(1, n_clusters):
+            probs = closest_dist_sq / np.sum(closest_dist_sq)
+            idx = rng.choice(X.shape[0], p=probs)
+            centers[c] = X[idx]
+            dist_sq = np.sum((X - centers[c]) ** 2, axis=1)
+            closest_dist_sq = np.minimum(closest_dist_sq, dist_sq)
+        
+        # --- Optimization Loop ---
+        for _ in tqdm(range(max_iter), desc="Spherical K-Means Optimization"):
+            sims = X @ centers.T
+            labels = np.argmax(sims, axis=1)
+            
+            # Track similarity to current assignment to help empty cluster handling
+            assigned_sims = sims[np.arange(len(labels)), labels]
+
+            new_centers = np.zeros_like(centers)
+            for k in range(n_clusters):
+                mask = (labels == k)
+                if np.sum(mask) == 0:
+                    # Fix: Find worst fitted point, assign to this center, 
+                    # then mask it out so it's not picked by another empty cluster
+                    worst_idx = np.argmin(assigned_sims)
+                    new_centers[k] = X[worst_idx]
+                    
+                    # Prevent this point from being stolen again in this iteration
+                    assigned_sims[worst_idx] = np.inf 
+                else:
+                    new_centers[k] = X[mask].mean(axis=0)
+            
+            new_centers = normalize(new_centers, axis=1)
+
+            # Check convergence
+            shift = np.max(np.linalg.norm(new_centers - centers, axis=1))
+            centers = new_centers
+            if shift <= tol:
+                break
+
+        # --- Final Scoring ---
+        sims = X @ centers.T
+        labels = np.argmax(sims, axis=1)
+        inertia = -np.sum(np.max(sims, axis=1))
+        
+        if inertia < best_inertia:
+            best_inertia = inertia
+            best_labels = labels
+            best_centers = centers
+
+    return best_labels, best_centers
 
 def get_pca(embeddings, n_components):
     pca = PCA(n_components=n_components, random_state=42)
