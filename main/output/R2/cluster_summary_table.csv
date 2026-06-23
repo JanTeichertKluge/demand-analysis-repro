@@ -1,6 +1,6 @@
-Cluster,Label,# Products,# Observations,Mean Price ($),Mean Rating,Median Reviews,Dominant Product Type,Mean Elasticity
-0,Movie-Themed Collectibles,649,6942,3.06,4.45,29,Cars & Race Cars / Residual,-0.576
-1,Large-Scale Utility Trucks,957,9966,3.06,4.54,275,Trucks / Cars & Race Cars,-0.979
-2,1:64 Die-Cast Replicas,885,8285,2.53,4.41,23,Cars & Race Cars / Skateboards,-0.635
-3,Pull-Back Models & Wooden Trains,841,8701,3.65,4.49,106,Residual / Cars & Race Cars,-0.684
-4,Stunt Vehicles & Playsets,400,4147,2.59,4.62,16,Cars & Race Cars / Trucks,-0.727
+Cluster,Label,# Products,# Observations,Mean Price ($),Median Sales Rank,Mean Rating,Median Reviews,Dominant Product Type,Mean Elasticity
+0,Movie-Themed Collectibles,649,6942,23.19,181353,4.45,29,Cars & Race Cars / Residual,-0.576
+1,Large-Scale Utility Trucks,957,9966,23.74,27601,4.54,275,Trucks / Cars & Race Cars,-0.979
+2,1:64 Die-Cast Replicas,885,8285,13.81,75229,4.41,23,Cars & Race Cars / Skateboards,-0.635
+3,Pull-Back Models & Wooden Trains,841,8701,47.16,96997,4.49,106,Residual / Cars & Race Cars,-0.684
+4,Stunt Vehicles & Playsets,400,4147,15.2,128476,4.62,16,Cars & Race Cars / Trucks,-0.727
