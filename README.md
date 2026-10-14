@@ -6,7 +6,7 @@ This repository contains the code, configurations, and output folders used for t
 - **Main analysis**: notebooks in `main/code` reproduce the paper’s primary empirical results (embedding construction, clustering, predictive performance, evaluation).
 - **Appendix analyses**: notebooks in `appendix/code` reproduce supplemental experiments (substitute prices, dimensionality reduction via neural nets, replication on clothes data).
 - **Outputs**: generated figures/tables are written to `output/` folders under each track (main and appendix).
-- **EmbeddingGemma 2 variant**: the main evaluation re-run with off-the-shelf EmbeddingGemma 2 embeddings instead of the fine-tuned embeddings. See `main/README.md`.
+- **EmbeddingGemma 2 variant**: notebooks in `gemma/code` re-run the main analysis with off-the-shelf EmbeddingGemma 2 embeddings instead of the fine-tuned embeddings (outputs in `gemma/outputs`). See `gemma/README.md`.
 
 ## Data availability
 - Prediction/embedding files referenced in `paths_config.yaml` are stored in this repository under `main/data/predictions` and `appendix/data/**`. These files are derived from proprietary product data.
