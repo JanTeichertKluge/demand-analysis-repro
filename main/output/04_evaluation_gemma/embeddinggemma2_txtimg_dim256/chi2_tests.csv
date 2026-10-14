@@ -1,0 +1,4 @@
+model,p_value_clusters,p_value_heterogeneity
+Linear Specification,0.00116615779167617,1.2893218537257667e-07
+Linear Specification (Interactions),0.0006873333246726343,3.921103097770384e-08
+PLR Specification,0.011641517931017642,3.5305402052765444e-05

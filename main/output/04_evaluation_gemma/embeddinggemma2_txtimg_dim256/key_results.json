@@ -1,0 +1,44 @@
+{
+  "embedding_source": "embeddinggemma2",
+  "modality": "txtimg",
+  "emb_dim": 256,
+  "dataset": "dataset_gemma_txtimg_dim256",
+  "n_obs": 38041,
+  "n_products": 3708,
+  "sensitivity": {
+    "theta": -0.7005393852580923,
+    "theta_lower_cf003": -0.8347297574096405,
+    "theta_upper_cf003": -0.5663490131065442,
+    "ci_lower_cf003": -0.8918657239427272,
+    "ci_upper_cf003": -0.5051651822487759,
+    "rv": 0.14687702370247352,
+    "rva": 0.13285516011612325,
+    "implied_rho": 0.08436150187272491,
+    "partial_r2_outcome": 0.19949942298842088,
+    "partial_r2_treatment": 0.06523169795589405,
+    "scaled_implied_rv": 0.009904465162968782
+  },
+  "sorted_effects_quantiles": {
+    "SortEff_lin": [
+      -1.167625,
+      -0.868216,
+      -0.696454,
+      -0.528835,
+      -0.328311
+    ],
+    "SortEff_tab_dml": [
+      -1.189704,
+      -0.882289,
+      -0.703412,
+      -0.529142,
+      -0.318408
+    ],
+    "SortEff_deep_dml": [
+      -1.279554,
+      -0.859527,
+      -0.654035,
+      -0.48069,
+      -0.25138
+    ]
+  }
+}
