@@ -1,0 +1,44 @@
+{
+  "data_dir": "../../main/data",
+  "txt_only": false,
+  "emb_dim": 256,
+  "dataset": "dataset_txt_only_False_embeddings_True",
+  "n_obs": 38041,
+  "n_products": 3708,
+  "sensitivity": {
+    "theta": -0.6971258290942791,
+    "theta_lower_cf003": -0.8290184436646858,
+    "theta_upper_cf003": -0.5652332145238724,
+    "ci_lower_cf003": -0.8896405945310392,
+    "ci_upper_cf003": -0.5009732544136769,
+    "rv": 0.1485608809824332,
+    "rva": 0.13366702224393123,
+    "implied_rho": 0.15034873199463553,
+    "partial_r2_outcome": 0.20080524160037905,
+    "partial_r2_treatment": 0.04992041759016926,
+    "scaled_implied_rv": 0.015324733091348353
+  },
+  "sorted_effects_quantiles": {
+    "SortEff_lin": [
+      -1.08038,
+      -0.833155,
+      -0.674136,
+      -0.529134,
+      -0.369806
+    ],
+    "SortEff_tab_dml": [
+      -1.11162,
+      -0.845922,
+      -0.681289,
+      -0.533545,
+      -0.368889
+    ],
+    "SortEff_deep_dml": [
+      -1.331429,
+      -0.953789,
+      -0.723124,
+      -0.490669,
+      -0.202364
+    ]
+  }
+}
