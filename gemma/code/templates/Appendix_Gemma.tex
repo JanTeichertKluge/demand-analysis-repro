@@ -5,9 +5,9 @@
 \setlength{\emergencystretch}{3em}% the model name is not hyphenated
 \section{Robustness Check: Embeddings without Fine-Tuning}\label{app:gemma}
 
-\revised{This section repeats the analysis with off-the-shelf embeddings that are not fine-tuned. The workflow is exactly the same as in the main analysis (Section~\ref{app:workflow}), except that the fine-tuning in step~2 is omitted and the embeddings in step~3 are computed with EmbeddingGemma~2 \citep{embeddinggemma2}. All features are computed with Algorithm~\ref{alg:features}; the sample split, the estimation sample, the tabular controls, the learners, and the random seeds are unchanged.}
+\revised{This section repeats the analysis with off-the-shelf embeddings that are not fine-tuned. The workflow is exactly the same as in the main analysis (Section~\ref{app:workflow}), except that the fine-tuning in step~2 is omitted, the embeddings in step~3 are computed with EmbeddingGemma~2 \citep{embeddinggemma2}, and their truncation to 256 coordinates replaces the random projection in Algorithm~\ref{alg:features}. All other steps of Algorithm~\ref{alg:features}, the sample split, the estimation sample, the tabular controls, the learners, and the random seeds are unchanged.}
 
-\revised{EmbeddingGemma~2 is an open multimodal embedding model released by Google DeepMind in October 2026. Built on Gemma 4, it maps text, images, video, and audio into a shared 768-dimensional space. Of its 740M parameters, we use the 270M-parameter text model and the 170M-parameter vision encoder. The description and the image of each product are encoded jointly, with the task prefix for clustering (checkpoint \texttt{google/embeddinggemma-2}, revision \texttt{<<revision>>}). As the model is trained with Matryoshka representation learning, we keep the leading 256 coordinates of each embedding and re-normalize them instead of applying the random projection in Algorithm~\ref{alg:features}. Unlike the fine-tuned embeddings, these embeddings are not trained on our data and use neither tabular inputs nor the price and quantity signals. The comparison therefore changes the encoders, their inputs, and the fine-tuning at the same time.}
+\revised{EmbeddingGemma~2 is an open multimodal embedding model released by Google DeepMind in October 2026. Built on Gemma 4, it maps text, images, video, and audio into a shared 768-dimensional space. Of its 740M parameters, we use the 270M-parameter text model and the 170M-parameter vision encoder. The description and the image of each product are encoded jointly, with the task prefix for clustering (checkpoint \texttt{google/embeddinggemma-2}, revision \texttt{<<revision>>}). As the model is trained with Matryoshka representation learning, we keep the leading 256 coordinates of each embedding and re-normalize them. Unlike the fine-tuned embeddings, these embeddings are not trained on our data and use neither tabular inputs nor the price and quantity signals. The comparison therefore changes the encoders, their inputs, and the fine-tuning at the same time. Figures~\ref{fig:gemma_ate} and \ref{fig:gemma_sorted} also show two variants: text-only embeddings (256 dimensions) and text and image embeddings with all 768 dimensions.}
 
 \paragraph{Clusters.} <<cluster_text>>
 
@@ -19,7 +19,7 @@
 \begin{tabular}{>{\centering\arraybackslash}m{0.12\textwidth} >{\centering\arraybackslash}m{0.52\textwidth}}
 <<cluster_figure_rows>>
 \end{tabular}
-\caption{\revised{Products closest to the five cluster centers (EmbeddingGemma~2, Text + Image). The clusters define the similarity features $X^{sim}_i$ used in Table~\ref{tab:gemma_r2} and Figures~\ref{fig:gemma_cate} and \ref{fig:gemma_sorted}.}}
+\caption{\revised{Products closest to the five cluster centers (EmbeddingGemma~2, Text + Image). The clusters define the similarity features $X^{sim}_i$ used in the remainder of this section.}}
 \label{fig:gemma_clusters}
 \end{figure}
 
@@ -48,56 +48,49 @@ Method [features] & FT & EG & FT & EG & FT & EG & FT & EG\\
 
 \paragraph{Homogeneous elasticities.} <<ate_text>>
 
+\begin{figure}[!htbp]
+\centering
+\linespread{1}\selectfont
+\RevisionBlue
+\includegraphics[width=\textwidth]{<<figure_dir>>/ate_estimates_comparison.png}
+\caption{\revised{Estimated homogeneous inverse-rank elasticities and 90\% confidence intervals by embedding.}}
+\caption*{\footnotesize \revised{Note: Left: linear models (Model I-1); right: partially linear models with boosted trees (Model I-3). Labels give the controls in addition to the state $(P_{t-1}, Q_{t-1})$: \texttt{embeddings}/\texttt{emb} $=X^{e}$, \texttt{sim} $=X^{sim}$, \texttt{pca} $=$ five principal components, \texttt{add\_controls} $=X^{o}_t$. Standard errors are clustered at the product level. The fine-tuned estimates are those of the main analysis.}}
+\label{fig:gemma_ate}
+\end{figure}
+
+\paragraph{Heterogeneous elasticities.} <<het_text>>
+
 \begin{table}[!htbp]
 \centering
 \linespread{1}\selectfont
 \RevisionBlue
-\caption{\revised{Estimated inverse-rank elasticities based on the partially linear dynamic model: fine-tuned vs.\ EmbeddingGemma~2 embeddings.}}
-\label{tab:gemma_ate}
-\resizebox{1\textwidth}{!}{
-\begin{tabular}{lcccccc}
+\footnotesize
+\caption{\revised{$p$-values for $\chi^2$-tests of joint significance of the cluster similarities as price effect modifiers, by embedding.}}
+\label{tab:gemma_chi2}
+\begin{tabular}{lcccc}
 \toprule
- & \multicolumn{3}{c}{Fine-tuned embeddings} & \multicolumn{3}{c}{EmbeddingGemma~2}\\
-\cmidrule(lr){2-4}\cmidrule(lr){5-7}
-Specification of Control Function (State $S_{t}$) & coef & std err & 90\% CI & coef & std err & 90\% CI\\
+ & & \multicolumn{3}{c}{EmbeddingGemma~2}\\
+\cmidrule(lr){3-5}
+Model & Fine-tuned & Text + image & Text only & Text + image, 768d\\
 \midrule
-<<table_ate>>
+<<table_chi2>>
 \bottomrule
 \end{tabular}
-}
-\caption*{\footnotesize \revised{Note: Standard errors are clustered at the product level. The fine-tuned columns repeat the estimates of the main text. Model I-1 without $X^{e}$ or $X^{sim}$ does not use embeddings.}}
+\caption*{\footnotesize \revised{Note: Similarities only. The joint test of all modifiers gives $p<0.001$ for every model and embedding. Standard errors are clustered at the product level. The fine-tuned column repeats the corresponding table of the main text.}}
 \end{table}
 
-\paragraph{Heterogeneous elasticities.} <<het_text>>
-
 \begin{figure}[!htbp]
 \centering
 \linespread{1}\selectfont
 \RevisionBlue
-\includegraphics[width=.72\textwidth]{<<figure_dir>>/cate_estimates_comparison.png}
-\caption{\revised{Parameters of the estimated inverse-rank elasticity function and 90\% confidence intervals: fine-tuned (top) vs.\ EmbeddingGemma~2 (bottom) embeddings.}}
-\caption*{\footnotesize \revised{Note: Covariance is clustered at the product level. The LR models are estimated using OLS, the PLR model using DML with cross-fitted boosted trees. The top panel shows the estimates of the corresponding figure of the main text. The cluster similarities refer to different clusters for the two embeddings.}}
-\label{fig:gemma_cate}
-\end{figure}
-
-\begin{figure}[!htbp]
-\centering
-\linespread{1}\selectfont
-\RevisionBlue
-\begin{subfigure}{\textwidth}
-\centering
-\includegraphics[width=.7\textwidth]{<<figure_dir>>/sorted_effects_finetuned.png}
-\caption{\revised{Fine-tuned embeddings}}
-\end{subfigure}
-\begin{subfigure}{\textwidth}
-\centering
-\includegraphics[width=.7\textwidth]{<<figure_dir>>/sorted_effects_gemma.png}
-\caption{\revised{EmbeddingGemma~2}}
-\end{subfigure}
-\caption{\revised{Sorted inverse-rank elasticity and 90\% pointwise confidence bands: fine-tuned vs.\ EmbeddingGemma~2 embeddings.}}
-\caption*{\footnotesize \revised{Note: Panel (a) repeats the corresponding figure of the main text.}}
+\includegraphics[width=\textwidth]{<<figure_dir>>/sorted_effects_comparison.png}
+\caption{\revised{Sorted inverse-rank elasticities (Models II-1 to II-3) by embedding.}}
+\caption*{\footnotesize \revised{Note: Fitted conditional effects of the elasticity function, sorted. The fine-tuned curves are those of the main analysis.}}
 \label{fig:gemma_sorted}
 \end{figure}
+
+% CATE parameters (commented out for now)
+<<cate_commented>>
 
 \paragraph{Sensitivity analysis.} <<sensitivity_text>>
 
