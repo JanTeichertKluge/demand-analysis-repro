@@ -16,7 +16,8 @@
     "implied_rho": 0.08436150187272491,
     "partial_r2_outcome": 0.19949942298842088,
     "partial_r2_treatment": 0.06523169795589405,
-    "scaled_implied_rv": 0.009904465162968782
+    "scaled_implied_rv": 0.009904465162968782,
+    "K": 0.009953881766311207
   },
   "sorted_effects_quantiles": {
     "SortEff_lin": [
