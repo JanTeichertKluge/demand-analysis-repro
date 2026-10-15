@@ -53,6 +53,8 @@ Inverse-rank elasticities with 90% CIs (`outputs/04_evaluation_comparison/ate_es
 | PLR, PCA + controls | -0.677 [-0.749, -0.605] | -0.689 [-0.757, -0.622] | -0.690 [-0.757, -0.622] | -0.694 [-0.763, -0.625] |
 | R² outcome / treatment (PLR, emb. + controls) | 0.891 / 0.974 | 0.895 / 0.976 | 0.898 / 0.974 | 0.894 / 0.976 |
 | Robustness value RV (PLR, emb. + controls) | 0.149 | 0.147 | 0.141 | 0.149 |
+| Upper 90% confidence bound at 1x / 1.5x / 2x the main calibration (1.53%, 2.30%, 3.06%) | -0.567 / -0.533 / -0.498 | -0.572 / -0.537 / -0.502 | -0.508 / -0.474 / -0.440 | -0.581 / -0.546 / -0.511 |
+| Share at which the upper confidence bound reaches -0.5 (RVa) | 3.02% | 3.11% | 1.71% | 3.31% |
 | χ² p-value, heterogeneity along clusters (PLR) | 0.0009 | 0.0116 | 0.0162 | 0.0066 |
 
 The cluster-similarity variables cannot be compared one-to-one across runs, because k-means is re-estimated for every embedding.

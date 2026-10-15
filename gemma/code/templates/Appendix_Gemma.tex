@@ -1,14 +1,17 @@
 % Template of Appendix_Gemma.tex (Online Appendix). Filled in by 05_appendix_gemma.ipynb;
 % <<name>> placeholders are replaced by values computed from the estimation outputs.
+\hyphenation{EmbeddingGemma}
+\begingroup
+\setlength{\emergencystretch}{3em}% the model name is not hyphenated
 \section{Robustness Check: Embeddings without Fine-Tuning}\label{app:gemma}
 
 \revised{The product embeddings of the main analysis are fine-tuned to predict quantity and price signals (Section~\ref{app:impl}). This section repeats the cluster analysis, the prediction benchmarks, the homogeneous elasticity estimates (Models I-1 to I-3), and their sensitivity analysis with embeddings from a general-purpose pre-trained model that is not fine-tuned on our data, and compares the results with those of the main analysis.}
 
-\subsection{EmbeddingGemma 2}
+\subsection{EmbeddingGemma~2}
 
-\revised{EmbeddingGemma 2 \citep{embeddinggemma2} is an open multimodal embedding model released by Google DeepMind in October 2026. It builds on the Gemma 4 architecture and maps text, images, video, audio, and interleaved combinations of these inputs into a single 768-dimensional embedding space. The model has 740M parameters: a 270M-parameter text model, consisting of a 130M-parameter transformer backbone and 140M embedding parameters, and separate vision (170M) and audio (300M) encoders. We use the text model and the vision encoder. An embedding is the mean-pooled output of the transformer, projected from 512 to 768 dimensions. The model is trained with Matryoshka representation learning, so the leading 512, 256, or 128 coordinates of an embedding, re-normalized to unit length, serve as lower-dimensional embeddings.}
+\revised{EmbeddingGemma~2 \citep{embeddinggemma2} is an open multimodal embedding model released by Google DeepMind in October 2026. It builds on the Gemma 4 architecture and maps text, images, video, audio, and interleaved combinations of these inputs into a single 768-dimensional embedding space. The model has 740M parameters: a 270M-parameter text model, consisting of a 130M-parameter transformer backbone and 140M embedding parameters, and separate vision (170M) and audio (300M) encoders. We use the text model and the vision encoder. An embedding is the mean-pooled output of the transformer, projected from 512 to 768 dimensions. The model is trained with Matryoshka representation learning, so the leading 512, 256, or 128 coordinates of an embedding, re-normalized to unit length, serve as lower-dimensional embeddings.}
 
-\revised{We use the checkpoint \texttt{google/embeddinggemma-2} (revision \texttt{<<revision>>}) with the \texttt{sentence-\allowbreak transformers} package. The description and the image of a product enter as one interleaved input: the text, preceded by the task prefix for clustering (\texttt{task:\ clustering | query:}), followed by the image, encoded with the default budget of up to <<vision_tokens>> vision tokens. This gives one embedding per product. We truncate the embeddings to their leading 256 coordinates, the dimension of the projected embeddings in the main analysis, and re-normalize them; this replaces the random projection in Algorithm~\ref{alg:features}. All subsequent steps are unchanged. The centered and normalized embeddings $X^{e}_i$, the principal components, and the cluster similarities $X^{sim}_i$ are computed with Algorithm~\ref{alg:features} and the same random seeds. The tabular controls, the estimation sample, and the estimation settings are those of the main analysis. Differences from the main results therefore stem from the embeddings alone. Unlike the fine-tuned embeddings, EmbeddingGemma 2 is not trained on our data; its embeddings depend only on the product text and image and use neither the tabular inputs of the fine-tuned model nor the price and quantity signals. The comparison thus replaces the encoders, omits the tabular encoder, and removes the fine-tuning at the same time; it does not isolate the effect of fine-tuning alone.}
+\revised{We use the checkpoint \texttt{google/embeddinggemma-2} (revision \texttt{<<revision>>}) with the \texttt{sentence-\allowbreak transformers} package. The description and the image of a product enter as one interleaved input: the text, preceded by the task prefix for clustering (\texttt{task:\ clustering | query:}), followed by the image, encoded with the default budget of up to <<vision_tokens>> vision tokens. This gives one embedding per product. We truncate the embeddings to their leading 256 coordinates, the dimension of the projected embeddings in the main analysis, and re-normalize them; this replaces the random projection in Algorithm~\ref{alg:features}. All subsequent steps are unchanged. The centered and normalized embeddings $X^{e}_i$, the principal components, and the cluster similarities $X^{sim}_i$ are computed with Algorithm~\ref{alg:features} and the same random seeds. The tabular controls, the estimation sample, and the estimation settings are those of the main analysis. Differences from the main results therefore stem from the embeddings alone. Unlike the fine-tuned embeddings, EmbeddingGemma~2 is not trained on our data; its embeddings depend only on the product text and image and use neither the tabular inputs of the fine-tuned model nor the price and quantity signals. The comparison thus replaces the encoders, omits the tabular encoder, and removes the fine-tuning at the same time; it does not isolate the effect of fine-tuning alone.}
 
 \subsection{Qualitative Assessment}
 
@@ -21,7 +24,7 @@
 \begin{tabular}{>{\centering\arraybackslash}m{0.12\textwidth} >{\centering\arraybackslash}m{0.72\textwidth}}
 <<cluster_figure_rows>>
 \end{tabular}
-\caption{\revised{Products closest to the five cluster centers (EmbeddingGemma 2, Text + Image). The clusters define the similarity features $X^{sim}_i$ used in Tables~\ref{tab:gemma_r2} and \ref{tab:gemma_ate}.}}
+\caption{\revised{Products closest to the five cluster centers (EmbeddingGemma~2, Text + Image). The clusters define the similarity features $X^{sim}_i$ used in Tables~\ref{tab:gemma_r2} and \ref{tab:gemma_ate}.}}
 \label{fig:gemma_clusters}
 \end{figure}
 
@@ -33,7 +36,7 @@
 \centering
 \RevisionBlue
 \small
-\caption{\revised{Test $R^2$ scores (in \%) for predicting quantity and price signals: fine-tuned (FT) vs.\ EmbeddingGemma 2 (EG) embeddings.}}
+\caption{\revised{Test $R^2$ scores (in \%) for predicting quantity and price signals: fine-tuned (FT) vs.\ EmbeddingGemma~2 (EG) embeddings.}}
 \label{tab:gemma_r2}
 \resizebox{1\textwidth}{!}{
 \begin{tabular}{lcccccccc}
@@ -56,12 +59,12 @@ Method [features] & FT & EG & FT & EG & FT & EG & FT & EG\\
 \begin{table}[!htbp]
 \centering
 \RevisionBlue
-\caption{\revised{Estimated inverse-rank elasticities based on the partially linear dynamic model: fine-tuned vs.\ EmbeddingGemma 2 embeddings.}}
+\caption{\revised{Estimated inverse-rank elasticities based on the partially linear dynamic model: fine-tuned vs.\ EmbeddingGemma~2 embeddings.}}
 \label{tab:gemma_ate}
 \resizebox{1\textwidth}{!}{
 \begin{tabular}{lcccccc}
 \toprule
- & \multicolumn{3}{c}{Fine-tuned embeddings} & \multicolumn{3}{c}{EmbeddingGemma 2}\\
+ & \multicolumn{3}{c}{Fine-tuned embeddings} & \multicolumn{3}{c}{EmbeddingGemma~2}\\
 \cmidrule(lr){2-4}\cmidrule(lr){5-7}
 Specification of Control Function (State $S_{t}$) & coef & std err & 90\% CI & coef & std err & 90\% CI\\
 \midrule
@@ -79,7 +82,7 @@ Specification of Control Function (State $S_{t}$) & coef & std err & 90\% CI & c
 \begin{table}[!htbp]
 \centering
 \RevisionBlue
-\caption{\revised{Omitted-confounding scenarios at the residual shares of Table~\ref{tab:sensitivity_calibrated}: fine-tuned vs.\ EmbeddingGemma 2 embeddings.}}
+\caption{\revised{Omitted-confounding scenarios at the residual shares of Table~\ref{tab:sensitivity_calibrated}: fine-tuned vs.\ EmbeddingGemma~2 embeddings.}}
 \label{tab:gemma_sensitivity}
 \begin{tabular}{lccccc}
 \toprule
@@ -90,7 +93,7 @@ Scenario & Residual share & Lower & Upper & Lower & Upper\\
 \multicolumn{6}{l}{\textit{Fine-tuned embeddings} ($\hat\alpha=<<alpha_main>>$)}\\
 <<table_sens_main>>
 \midrule
-\multicolumn{6}{l}{\textit{EmbeddingGemma 2} ($\hat\alpha=<<alpha_gemma>>$)}\\
+\multicolumn{6}{l}{\textit{EmbeddingGemma~2} ($\hat\alpha=<<alpha_gemma>>$)}\\
 <<table_sens_gemma>>
 \bottomrule
 \end{tabular}
@@ -100,11 +103,11 @@ Scenario & Residual share & Lower & Upper & Lower & Upper\\
 \begin{table}[!htbp]
 \centering
 \RevisionBlue
-\caption{\revised{Observed-covariate benchmark and robustness values: fine-tuned vs.\ EmbeddingGemma 2 embeddings.}}
+\caption{\revised{Observed-covariate benchmark and robustness values: fine-tuned vs.\ EmbeddingGemma~2 embeddings.}}
 \label{tab:gemma_benchmark}
 \begin{tabular}{lcc}
 \toprule
- & Fine-tuned & EmbeddingGemma 2\\
+ & Fine-tuned & EmbeddingGemma~2\\
 \midrule
 <<table_bench>>
 \bottomrule
@@ -113,3 +116,4 @@ Scenario & Residual share & Lower & Upper & Lower & Upper\\
 \end{table}
 
 <<conclusion_text>>
+\par\endgroup
