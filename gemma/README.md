@@ -7,7 +7,7 @@ All embedding-derived variables are recomputed from the Gemma embeddings with th
 ## Embeddings
 - Model `google/embeddinggemma-2`, revision `914f7f8`, loaded with sentence-transformers.
 - One embedding per product (product texts and images are time-invariant), computed with the prompt `task: clustering | query: `.
-- `txtimg`: the product text and image are interleaved into one multimodal embedding (`{text} <|image|>`, 280 vision tokens per image). `txt`: text only.
+- `txtimg`: the product text and image are interleaved into one multimodal embedding (`{text} <|image|>`, default vision-token budget of up to 280 tokens per image). `txt`: text only.
 - bfloat16 inference. On a 4-core CPU this takes about 0.2 s per product for `txt` and 2.5 s for `txtimg`.
 - Matryoshka truncation to 256 dimensions (the dimension of the fine-tuned embeddings), followed by L2 re-normalization.
 - Where the main analysis uses text-only embeddings (`01_2`, `03_2`, and the text part of `02_cluster_centroid_products`), the Gemma `txt` embeddings are used. Everywhere else the `txtimg` embeddings are used.
@@ -28,14 +28,15 @@ Run from `code/`:
 2. `01_1_create_dataset_txt_img.ipynb` and `01_2_create_dataset_txt.ipynb`: build the datasets.
 3. `02_cluster_centroid_products.ipynb`: clusters, 3D plots, and products closest to the centroids. It also contains the cluster headlines. These were generated with Claude, because Gemini 3 Pro (used in `main`) was not available, and the GenAI images of `main` were not reproduced.
 4. `03_1_predictive_performance_txt_img.ipynb` and `03_2_predictive_performance_txt.ipynb`. The deep-learning rows (`Deep Time (In)dependent`) are the fine-tuned models of the main analysis and serve as a benchmark.
-5. `04_evaluation.ipynb`: main specification (`txtimg`, 256 dimensions). It has a parameters cell (`data_dir`, `txt_only`, `emb_dim`, `output_dir`) and exports the key results as CSV and JSON.
+5. `04_evaluation.ipynb`: main specification (`txtimg`, 256 dimensions). It has a parameters cell (`data_dir`, `txt_only`, `emb_dim`, `output_dir`) and exports the key results as CSV and JSON. In addition to the calibrated sensitivity scenarios of `main` (based on each run's own observed-covariate benchmark), it computes the bounds at the residual shares of the main analysis (`sensitivity_main_shares.csv`).
 6. `02_cluster_summary.ipynb`: requires `outputs/04_evaluation/sorted_effects.csv`.
 7. `04_evaluation_comparison.ipynb`: compares four runs of `04_evaluation.ipynb`. Three are the extra runs below, and one is the main specification. The extra runs are stored as executed notebooks in `outputs/04_evaluation_comparison/<run>/`:
    - `finetuned`: the original specification (`data_dir="../../main/data"`), re-run in this environment. It reproduces `main/code/04_evaluation.ipynb` exactly.
    - `gemma_txt_dim256`: text-only embeddings (`txt_only=True`).
    - `gemma_txtimg_dim768`: full 768 dimensions (`emb_dim=768`).
+8. `05_appendix_gemma.ipynb`: writes `outputs/05_appendix_gemma/Appendix_Gemma.tex` (Online Appendix section comparing the fine-tuned and EmbeddingGemma 2 results) and its figures from the outputs above and from `main/output`. The text is in `templates/Appendix_Gemma.tex`; numbers and qualitative statements are computed and checked in the notebook.
 
-`04_evaluation.ipynb` corresponds to `main/code/04_evaluation.ipynb` as of commit `f352b25`. It therefore contains the grid of sensitivity scenarios, not the calibrated scenarios and the main elasticity table that were added to `main` later.
+`04_evaluation.ipynb` corresponds to the current `main/code/04_evaluation.ipynb` (main elasticity table, calibrated sensitivity scenarios).
 
 ## Main results
 Inverse-rank elasticities with 90% CIs (`outputs/04_evaluation_comparison/ate_estimates.csv`):
