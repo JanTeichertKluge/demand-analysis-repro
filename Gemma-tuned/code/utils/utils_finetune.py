@@ -206,7 +206,9 @@ def build_model(cfg, device, dtype, target_means=None):
                 for layer in head:
                     nn.init.xavier_uniform_(layer.weight)
                     nn.init.zeros_(layer.bias)
-                # start the predictions at the I_1 mean of the target (targets are not scaled)
+                # start the predictions exactly at the I_1 mean of the target (targets are not scaled): with a
+                # random last layer the common component of LN(z) shifts the initial predictions by about 1
+                nn.init.zeros_(head[-1].weight)
                 nn.init.constant_(head[-1].bias, float(mean))
 
         def embed(self, features):
@@ -364,7 +366,7 @@ def environment_info(device, dtype):
     return info
 
 
-def run_finetuning(cfg, main_data_dir, out_dir, resume=True, log=print):
+def run_finetuning(cfg, main_data_dir, out_dir, resume=True, allow_cpu=False, log=print):
     """
     Train (or resume) and return the trained model (best checkpoint loaded), the data and the history.
     Writes to out_dir: config.json, history.json, checkpoint_last.pt, checkpoint_best.pt.
@@ -372,8 +374,12 @@ def run_finetuning(cfg, main_data_dir, out_dir, resume=True, log=print):
     import torch
     from torch.utils.data import DataLoader
 
-    os.makedirs(out_dir, exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if device.type != "cuda" and not (allow_cpu or cfg.max_steps_per_epoch):
+        raise RuntimeError(
+            f"no usable GPU (torch {torch.__version__}, CUDA build {torch.version.cuda}); a full run on the CPU takes "
+            "days. Select a GPU runtime / check that the torch build matches the NVIDIA driver, or pass --allow-cpu.")
+    os.makedirs(out_dir, exist_ok=True)
     dtype = resolve_dtype(cfg.dtype)
     if device.type == "cuda":
         torch.backends.cuda.matmul.allow_tf32 = True
@@ -383,10 +389,12 @@ def run_finetuning(cfg, main_data_dir, out_dir, resume=True, log=print):
     products, rows, stats = load_finetune_data(main_data_dir)
     train_asins = products.loc[products["split"] == "train", "ASIN"].tolist()
     val_asins = products.loc[products["split"] == "val", "ASIN"].tolist()
+    # smoke tests: the products with the longest texts (worst case for the GPU memory)
+    text_len = products.set_index("ASIN")["text"].str.len()
     if cfg.max_train_products:
-        train_asins = train_asins[: cfg.max_train_products]
+        train_asins = sorted(train_asins, key=lambda a: -text_len[a])[: cfg.max_train_products]
     if cfg.max_val_products:
-        val_asins = val_asins[: cfg.max_val_products]
+        val_asins = sorted(val_asins, key=lambda a: -text_len[a])[: cfg.max_val_products]
     log(f"I_1: {len(train_asins)} products, I_2: {len(val_asins)} products")
 
     image_bytes = None
@@ -411,22 +419,52 @@ def run_finetuning(cfg, main_data_dir, out_dir, resume=True, log=print):
         optimizer, mode="min", factor=cfg.lr_factor, patience=cfg.lr_patience
     )
 
-    with open(os.path.join(out_dir, "config.json"), "w") as f:
-        json.dump({"config": cfg.to_json(), "environment": environment_info(device, dtype),
+    env = environment_info(device, dtype)
+    config_path = os.path.join(out_dir, "config.json")
+    environments = []
+    if resume and os.path.exists(config_path):  # one entry per (re)start of the run
+        environments = json.load(open(config_path)).get("environments", [])
+    with open(config_path, "w") as f:
+        json.dump({"config": cfg.to_json(), "environments": environments + [{**env, "started": time.strftime("%Y-%m-%d %H:%M:%S")}],
                    "n_trainable": n_trainable, "model_id": MODEL_ID, "model_revision": MODEL_REVISION,
                    "prompt": PROMPT}, f, indent=2)
 
     state = {"epoch": 0, "best_loss": float("inf"), "best_epoch": None, "es_best": float("inf"), "es_bad": 0,
-             "history": [], "stopped": False}
+             "history": [], "stopped": False, "dtype": env["dtype"]}
     last_path = os.path.join(out_dir, "checkpoint_last.pt")
     best_path = os.path.join(out_dir, "checkpoint_best.pt")
+    pending_path = best_path + ".pending"
+
+    def write_history():
+        with open(os.path.join(out_dir, "history.json"), "w") as f:
+            json.dump({"best_epoch": state["best_epoch"], "best_val_loss": state["best_loss"],
+                       "resumed_after_epochs": state.get("resumed_after", []), "history": state["history"]},
+                      f, indent=2)
+
     if resume and os.path.exists(last_path):
         ckpt = torch.load(last_path, map_location="cpu", weights_only=False)
+        state = ckpt["state"]
+        if state.get("dtype", env["dtype"]) != env["dtype"] and cfg.dtype == "auto":
+            raise RuntimeError(
+                f"the run was trained in {state['dtype']} but this GPU resolves to {env['dtype']}; resume on the "
+                f"same GPU type or pass --dtype {state['dtype']} (or --dtype {env['dtype']} to switch)")
+        state["dtype"] = env["dtype"]
         load_trainable_state(model, ckpt["trainable"])
         optimizer.load_state_dict(ckpt["optimizer"])
         scheduler.load_state_dict(ckpt["scheduler"])
-        state = ckpt["state"]
+        if "rng_cpu" in ckpt:
+            torch.set_rng_state(ckpt["rng_cpu"])
+        if device.type == "cuda" and ckpt.get("rng_cuda") is not None:
+            torch.cuda.set_rng_state_all(ckpt["rng_cuda"])
+        state.setdefault("resumed_after", []).append(state["epoch"])
         log(f"resumed after epoch {state['epoch']} (best I_2 loss {state['best_loss']:.4f} at epoch {state['best_epoch']})")
+    if os.path.exists(pending_path):
+        # interrupted between writing the new best checkpoint and checkpoint_last: keep it only if the saved state
+        # refers to it
+        if resume and torch.load(pending_path, map_location="cpu", weights_only=False)["epoch"] == state["best_epoch"]:
+            os.replace(pending_path, best_path)
+        else:
+            os.remove(pending_path)
 
     while state["epoch"] < cfg.max_epochs and not state["stopped"]:
         epoch = state["epoch"] + 1
@@ -441,6 +479,7 @@ def run_finetuning(cfg, main_data_dir, out_dir, resume=True, log=print):
             collate_fn=collator,
             num_workers=cfg.num_workers,
         )
+        lrs = [g["lr"] for g in optimizer.param_groups]  # learning rates of this epoch
         t0, sum_loss, n_steps, n_prod = time.time(), 0.0, 0, 0
         for step, (asins, features) in enumerate(loader):
             if cfg.max_steps_per_epoch and step >= cfg.max_steps_per_epoch:
@@ -448,10 +487,13 @@ def run_finetuning(cfg, main_data_dir, out_dir, resume=True, log=print):
             pred, _ = model(move_features(features, device))
             n, mean, ss = stats_tensors(stats, asins, device)
             loss, _ = rmse_product(pred.float(), n, mean, ss)
+            if not torch.isfinite(loss):
+                raise RuntimeError(f"non-finite loss at epoch {epoch} step {step + 1} (resume from the last epoch)")
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
-            if cfg.grad_clip:
-                torch.nn.utils.clip_grad_norm_([p for p in model.parameters() if p.requires_grad], cfg.grad_clip)
+            grad_norm = torch.nn.utils.clip_grad_norm_(
+                [p for p in model.parameters() if p.requires_grad], cfg.grad_clip or float("inf"),
+                error_if_nonfinite=True)
             optimizer.step()
             sum_loss += loss.item()
             n_steps += 1
@@ -460,22 +502,26 @@ def run_finetuning(cfg, main_data_dir, out_dir, resume=True, log=print):
                 rate = n_prod / (time.time() - t0)
                 mem = f", GPU mem {torch.cuda.max_memory_allocated() / 1e9:.1f} GB" if device.type == "cuda" else ""
                 log(f"epoch {epoch} step {n_steps}/{len(loader)}: batch loss {loss.item():.4f}, "
-                    f"{rate:.1f} products/s{mem}")
+                    f"grad norm {grad_norm.item():.2f}, {rate:.1f} products/s{mem}")
         train_time = time.time() - t0
 
         t1 = time.time()
         pred_val, _ = predict_products(model, val_asins, collator, cfg, device)
         val = evaluate_loss(pred_val, stats)
         val_time = time.time() - t1
+        if not math.isfinite(val["loss"]):
+            raise RuntimeError(f"non-finite I_2 loss after epoch {epoch}")
         scheduler.step(val["loss"])
         record = {
             "epoch": epoch,
             "train_batch_loss_mean": sum_loss / max(n_steps, 1),
             **{f"val_{k}": v for k, v in val.items()},
-            "lr_lora": optimizer.param_groups[0]["lr"],
-            "lr_head": optimizer.param_groups[1]["lr"],
+            "lr_lora": lrs[0],
+            "lr_head": lrs[1],
             "train_seconds": train_time,
             "val_seconds": val_time,
+            "dtype": env["dtype"],
+            "gpu": env.get("gpu"),
         }
         state["history"].append(record)
         log(f"epoch {epoch}: train batch loss {record['train_batch_loss_mean']:.4f} | I_2 loss {val['loss']:.4f} "
@@ -485,8 +531,10 @@ def run_finetuning(cfg, main_data_dir, out_dir, resume=True, log=print):
         improved = val["loss"] < state["best_loss"]
         if improved:  # checkpoint selection: minimum I_2 loss
             state["best_loss"], state["best_epoch"] = val["loss"], epoch
-            torch.save({"trainable": trainable_state(model), "epoch": epoch, "val": val}, best_path + ".tmp")
-            os.replace(best_path + ".tmp", best_path)
+            # two-phase commit with checkpoint_last: the new best replaces checkpoint_best.pt only after the state
+            # that refers to it has been saved
+            torch.save({"trainable": trainable_state(model), "epoch": epoch, "val": val}, pending_path + ".tmp")
+            os.replace(pending_path + ".tmp", pending_path)
         if val["loss"] < state["es_best"] - cfg.early_stopping_min_delta:  # early stopping
             state["es_best"], state["es_bad"] = val["loss"], 0
         else:
@@ -496,17 +544,22 @@ def run_finetuning(cfg, main_data_dir, out_dir, resume=True, log=print):
                 log(f"early stopping after epoch {epoch}")
         state["epoch"] = epoch
         torch.save({"trainable": trainable_state(model), "optimizer": optimizer.state_dict(),
-                    "scheduler": scheduler.state_dict(), "state": state}, last_path + ".tmp")
+                    "scheduler": scheduler.state_dict(), "state": state, "rng_cpu": torch.get_rng_state(),
+                    "rng_cuda": torch.cuda.get_rng_state_all() if device.type == "cuda" else None},
+                   last_path + ".tmp")
         os.replace(last_path + ".tmp", last_path)
-        with open(os.path.join(out_dir, "history.json"), "w") as f:
-            json.dump({"best_epoch": state["best_epoch"], "best_val_loss": state["best_loss"],
-                       "history": state["history"]}, f, indent=2)
+        if improved:
+            os.replace(pending_path, best_path)
+        write_history()
 
+    write_history()
     best = torch.load(best_path, map_location="cpu", weights_only=False)
+    assert best["epoch"] == state["best_epoch"], (best["epoch"], state["best_epoch"])
     load_trainable_state(model, best["trainable"])
     log(f"loaded best checkpoint: epoch {best['epoch']}, I_2 loss {best['val']['loss']:.4f}")
     data = {"products": products, "rows": rows, "stats": stats, "collator": collator, "device": device,
-            "dtype": dtype, "train_asins": train_asins, "val_asins": val_asins}
+            "dtype": dtype, "train_asins": train_asins, "val_asins": val_asins,
+            "best": {"epoch": best["epoch"], "val": best["val"]}}
     return model, data, state
 
 
@@ -522,22 +575,34 @@ def export_results(model, data, cfg, out_dir, export_dir, log=print):
 
     os.makedirs(export_dir, exist_ok=True)
     products, rows, stats = data["products"], data["rows"], data["stats"]
-    asins = products["ASIN"].tolist()
+    train_asins, val_asins = data["train_asins"], data["val_asins"]
     if cfg.max_export_products:
-        asins = data["train_asins"][: cfg.max_export_products // 2] + data["val_asins"][: cfg.max_export_products // 2]
+        train_asins = train_asins[: cfg.max_export_products // 2]
+        val_asins = val_asins[: cfg.max_export_products // 2]
     t0 = time.time()
-    pred, emb = predict_products(model, asins, data["collator"], cfg, data["device"], return_embeddings=True,
-                                 log_every=20)
+    # I_2 in the same batches as in the epoch evaluation (the bfloat16 forward pass depends on the batch
+    # composition), so that the exported I_2 predictions are those the checkpoint was selected on
+    pred_val, emb_val = predict_products(model, val_asins, data["collator"], cfg, data["device"],
+                                         return_embeddings=True, log_every=20)
+    pred_train, emb_train = predict_products(model, train_asins, data["collator"], cfg, data["device"],
+                                             return_embeddings=True, log_every=20)
+    asins = products.loc[products["ASIN"].isin(train_asins + val_asins), "ASIN"].tolist()
+    pred = pd.concat([pred_train, pred_val]).loc[asins]
+    emb = pd.concat([emb_train, emb_val]).loc[asins]
     log(f"exported {len(asins)} products in {(time.time() - t0) / 60:.1f} min")
     assert np.isfinite(emb.values).all() and np.isfinite(pred.values).all()
 
     tag = cfg.modality
     emb_path = os.path.join(export_dir, f"embeddinggemma2_tuned_{tag}.parquet")
     emb.reset_index().to_parquet(emb_path, index=False)
-    history = json.load(open(os.path.join(out_dir, "history.json")))
+    best = data["best"]
     split = products.set_index("ASIN")["split"]
     metrics = {s: evaluate_loss(pred[split.loc[pred.index] == s], stats) for s in ["train", "val"]
                if (split.loc[pred.index] == s).any()}
+    if len(val_asins) == len(data["val_asins"]) and abs(metrics["val"]["loss"] - best["val"]["loss"]) > 1e-6:
+        # e.g. a run resumed on a different GPU type
+        log(f"WARNING: exported I_2 loss {metrics['val']['loss']:.6f} differs from the I_2 loss of the selected "
+            f"checkpoint {best['val']['loss']:.6f}")
     meta = {
         "model_id": MODEL_ID,
         "model_revision": MODEL_REVISION,
@@ -547,8 +612,8 @@ def export_results(model, data, cfg, out_dir, export_dir, log=print):
         "head_input": f"Matryoshka truncation to {cfg.emb_dim} dimensions, L2-normalized",
         "embedding_dim": int(emb.shape[1]),
         "n_products": int(len(emb)),
-        "best_epoch": history["best_epoch"],
-        "best_val_loss": history["best_val_loss"],
+        "best_epoch": best["epoch"],
+        "best_val_loss": best["val"]["loss"],
         "loss_by_split": metrics,
         "config": cfg.to_json(),
         "environment": environment_info(data["device"], data["dtype"]),

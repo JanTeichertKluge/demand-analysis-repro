@@ -26,7 +26,8 @@ def main():
     parser.add_argument("--run-dir", required=True, help="checkpoints and logs (use persistent storage)")
     parser.add_argument("--export-dir", default=None, help="default: ../data/finetuned/<modality>")
     parser.add_argument("--main-data-dir", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../main/data"))
-    parser.add_argument("--no-resume", action="store_true")
+    parser.add_argument("--no-resume", action="store_true", help="train from scratch (also if already exported)")
+    parser.add_argument("--allow-cpu", action="store_true", help="allow a full run without a GPU")
     parser.add_argument("--smoke", action="store_true", help="tiny run (8+8 products, 2 epochs, 2 steps) to test the setup")
     for f in dataclasses.fields(FinetuneConfig):
         if f.name == "modality":
@@ -57,8 +58,20 @@ def main():
         print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
     log(f"config: {json.dumps(cfg.to_json())}")
-    model, data, state = run_finetuning(cfg, args.main_data_dir, args.run_dir, resume=not args.no_resume, log=log)
-    export_results(model, data, cfg, args.run_dir, export_dir, log=log)
+    export_dir = os.path.abspath(export_dir)
+    done_path = os.path.join(args.run_dir, "export_done.json")
+    if not args.no_resume and os.path.exists(done_path):
+        done = json.load(open(done_path))
+        meta_path = os.path.join(export_dir, f"embeddinggemma2_tuned_{cfg.modality}.json")
+        if done["config"] == cfg.to_json() and done["export_dir"] == export_dir and os.path.exists(meta_path):
+            log(f"already trained and exported to {export_dir} (best epoch {done['best_epoch']}); skipping")
+            return
+    model, data, state = run_finetuning(cfg, args.main_data_dir, args.run_dir, resume=not args.no_resume,
+                                        allow_cpu=args.allow_cpu, log=log)
+    meta = export_results(model, data, cfg, args.run_dir, export_dir, log=log)
+    if state["stopped"] or state["epoch"] >= cfg.max_epochs:
+        with open(done_path, "w") as f:
+            json.dump({"config": cfg.to_json(), "export_dir": export_dir, "best_epoch": meta["best_epoch"]}, f)
     log("done")
 
 
