@@ -62,10 +62,12 @@ class FinetuneConfig:
     lr_head: float = 1e-3
     weight_decay: float = 0.01
     max_epochs: int = 30
-    early_stopping_patience: int = 3
+    early_stopping_patience: int = 4  # a reduced learning rate gets at least two epochs before stopping
     early_stopping_min_delta: float = 1e-4
-    lr_factor: float = 0.1  # ReduceLROnPlateau on the I_2 loss (DoubleMLDeep default: factor 0.1, patience 0)
-    lr_patience: int = 0
+    # ReduceLROnPlateau on the I_2 loss. DoubleMLDeep: factor 0.1, patience 0, with SGD (lr 0.01, momentum 0.99). With
+    # AdamW the epoch-level I_2 loss fluctuates by a few hundredths, so patience 0 would cut the learning rates on noise
+    lr_factor: float = 0.1
+    lr_patience: int = 1
     grad_clip: float = 1.0
     gradient_checkpointing: bool = True
     dtype: str = "auto"  # "auto": bfloat16 on CPU and on GPUs with compute capability >= 8, else float32
@@ -416,7 +418,8 @@ def run_finetuning(cfg, main_data_dir, out_dir, resume=True, allow_cpu=False, lo
         weight_decay=cfg.weight_decay,
     )
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode="min", factor=cfg.lr_factor, patience=cfg.lr_patience
+        optimizer, mode="min", factor=cfg.lr_factor, patience=cfg.lr_patience,
+        min_lr=[cfg.lr_lora * 1e-2, cfg.lr_head * 1e-2],
     )
 
     env = environment_info(device, dtype)
