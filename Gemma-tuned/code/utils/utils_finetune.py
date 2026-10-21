@@ -61,7 +61,7 @@ class FinetuneConfig:
     lr_lora: float = 1e-4
     lr_head: float = 1e-3
     weight_decay: float = 0.01
-    max_epochs: int = 30
+    max_epochs: int = 20  # the delivered runs (data/finetuned) used 20
     early_stopping_patience: int = 4  # a reduced learning rate gets at least two epochs before stopping
     early_stopping_min_delta: float = 1e-4
     # ReduceLROnPlateau on the I_2 loss. DoubleMLDeep: factor 0.1, patience 0, with SGD (lr 0.01, momentum 0.99). With
