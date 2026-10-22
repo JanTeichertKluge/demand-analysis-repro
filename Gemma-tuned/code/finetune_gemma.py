@@ -1,7 +1,8 @@
 """
 LoRA fine-tuning of EmbeddingGemma 2 with the DoubleMLDeep loss (see utils/utils_finetune.py).
 
-Run from Gemma-tuned/code (GPU recommended: about 1-2 h for both modalities on an A100, 3-5 h on an L4):
+Run from Gemma-tuned/code (GPU recommended: about 5.4 h for both modalities on an A100, 4.4 h text + image and 1.0 h
+text only; considerably longer on an L4):
 
     python finetune_gemma.py --modality txtimg --run-dir RUN_DIR
     python finetune_gemma.py --modality txt --run-dir RUN_DIR
