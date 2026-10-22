@@ -14,11 +14,66 @@ This folder repeats the EmbeddingGemma 2 variant (`gemma/`) with an EmbeddingGem
 Reference values of the $I_2$ loss: constant predictor 0.818; DoubleMLDeep 0.332 (text + image) and 0.340 (text only); off-the-shelf EmbeddingGemma 2 at 256 dimensions with a ridge head 0.479 (text + image) and 0.500 (text only).
 
 ## Running the fine-tuning (GPU)
-- Colab: `code/00_finetune_gemma_colab.ipynb` (A100 or L4 runtime, Colab secret `GITHUB_TOKEN`, *Run all*). Checkpoints are kept on Google Drive and a run resumes after a disconnect. The results are pushed to the branch `gemma-tuned-results`.
+- Colab: `code/00_finetune_gemma_colab.ipynb` (A100 or L4 runtime, Colab secret `GITHUB_TOKEN`, *Run all*). Checkpoints are kept on Google Drive and a run resumes after a disconnect. The delivered runs were made with this notebook on A100 GPUs (bfloat16): text + image 4.4 h for 20 epochs (resumed three times), text only 1.0 h for 19 epochs.
 - Slurm: `code/slurm/finetune_gemma.sbatch` (see its header).
 - Command line, from `code/`: `python finetune_gemma.py --modality txtimg --run-dir RUN_DIR` (and `--modality txt`). `--smoke` runs a short end-to-end test.
 
-The code is in `code/finetune_gemma.py` and `code/utils/utils_finetune.py`. The outputs are written to `data/finetuned/<modality>/`: 768-dimensional L2-normalized embeddings of all products (`embeddinggemma2_tuned_<modality>.parquet`, with metadata `.json`), the predictions of the two heads for every product-period row, the LoRA adapter, the heads, and the training history.
+The code is in `code/finetune_gemma.py` and `code/utils/utils_finetune.py`. The outputs are written to `data/finetuned/<modality>/`: 768-dimensional L2-normalized embeddings of all products (`embeddinggemma2_tuned_<modality>.parquet`, with metadata `.json`), the predictions of the two heads for every product-period row (`predictions_<modality>.parquet`), the training history and the configuration. The LoRA adapters and the heads (`adapter_<modality>/`, `head_<modality>.pt`) are not part of the repository; they are only needed to recompute the embeddings.
 
-## Status
-The fine-tuning code is tested end to end on the CPU with a few products. The pipeline notebooks (01 to 04, as in `gemma/`) are run with the tuned embeddings once the GPU results are available.
+Fine-tuning results (selected epoch, loss over all rows of $I_2$; $R^2$ of the product-level predictions of the heads on $I_2$):
+
+| | $I_2$ loss | $R^2$ Q | $R^2$ P |
+| --- | --- | --- | --- |
+| text + image | 0.2966 (DoubleMLDeep: 0.3322) | 0.489 | 0.743 |
+| text only | 0.3191 (DoubleMLDeep: 0.3401) | 0.483 | 0.705 |
+
+## Pipeline
+The notebooks in `code/` are generated from those in `gemma/code` (same names; each notebook begins with a note on what differs) with the fine-tuned embeddings in place of the off-the-shelf ones: all embedding-derived variables (`emb_*`, `pca_*`, `similarity_cluster_*`, nearest-neighbour substitute prices) are recomputed from `data/finetuned/` with the same functions and seeds as in `main/code`; all other variables and the estimation samples are identical to the main analysis (checked with assertions). Run from `code/`:
+1. `01_1_create_dataset_txt_img.ipynb`, `01_2_create_dataset_txt.ipynb`: datasets in `data/` (text + image with 256 and 768 dimensions, text only with 256 dimensions).
+2. `02_cluster_centroid_products.ipynb`: clusters, 3D plots and products closest to the centroids, with the cluster headlines (generated with Claude from the 4 products closest to the centroids of the `similarity_cluster_*` clusters, with the prompt of `main`). As in `main`, the clusters estimated in this notebook (3D plots, `collage_cluster_img_*`) are numbered differently from the `similarity_cluster_*` clusters used in the estimation (cross-tabulation at the end of the notebook); `collage_similarity_cluster_*` and the headlines use the numbering of the estimation.
+3. `03_1_predictive_performance_txt_img.ipynb`, `03_2_predictive_performance_txt.ipynb`, with an additional row for the heads of the fine-tuned model.
+4. `04_evaluation.ipynb`: main specification (text + image, 256 dimensions); additional runs with `txt_only=True` and `emb_dim=768` in `outputs/04_evaluation_comparison/<run>/`.
+5. `02_cluster_summary.ipynb`: cluster table (as Table 9 of the paper), `outputs/R2/cluster_summary_table.csv`.
+6. `04_evaluation_comparison.ipynb`: DoubleMLDeep (main analysis), off-the-shelf EmbeddingGemma 2 (`gemma/`) and the three runs of this folder.
+
+Runtime on a 4-core CPU: about 3 h in total.
+
+## Results
+Predictive performance, $R^2$ (%) on the test sample ($I_2$), text + image (`03_1`); in parentheses text only (`03_2`):
+
+| | DoubleMLDeep (`main`) | EmbeddingGemma 2 (`gemma`) | fine-tuned EmbeddingGemma 2 |
+| --- | --- | --- | --- |
+| Q, OLS (tabular + 5 PCs) | 46.5 (44.9) | 31.1 (30.0) | 48.2 (44.4) |
+| P, OLS (tabular + 5 PCs) | 60.6 (55.1) | 16.5 (16.8) | 70.3 (66.1) |
+| Q, boosting (tabular + similarities) | 52.6 (52.0) | 53.2 (54.9) | 52.1 (52.7) |
+| P, boosting (tabular + similarities) | 62.5 (60.6) | 32.2 (34.6) | 71.8 (68.0) |
+| Q, deep model (time independent) | 50.4 (50.3) | | 50.0 (49.3) |
+| P, deep model (time independent) | 67.3 (65.7) | | 74.2 (70.4) |
+
+The deep-model rows are the DoubleMLDeep models and the heads of the fine-tuned model. Fine-tuning recovers what the off-the-shelf embeddings lack: a few principal components or cluster similarities of the fine-tuned embeddings again carry the price information, more than those of the DoubleMLDeep embeddings.
+
+Inverse-rank elasticities with 90% CIs (`outputs/04_evaluation_comparison/ate_estimates.csv`, selected rows):
+
+| | DoubleMLDeep | EmbeddingGemma 2 | fine-tuned (txt+img, 256d) | fine-tuned (txt, 256d) | fine-tuned (txt+img, 768d) |
+| --- | --- | --- | --- | --- | --- |
+| Linear, lagged + controls + embeddings | -0.712 [-0.776, -0.649] | -0.731 [-0.795, -0.667] | -0.720 [-0.784, -0.657] | -0.705 [-0.769, -0.642] | -0.708 [-0.772, -0.645] |
+| Linear, lagged + controls + similarities | -0.723 [-0.786, -0.659] | -0.735 [-0.799, -0.670] | -0.765 [-0.830, -0.700] | -0.730 [-0.794, -0.667] | -0.765 [-0.829, -0.700] |
+| PLR, embeddings + controls | -0.697 [-0.777, -0.617] | -0.701 [-0.776, -0.625] | -0.667 [-0.743, -0.591] | -0.677 [-0.741, -0.614] | -0.675 [-0.750, -0.599] |
+| PLR, similarities + controls | -0.691 [-0.757, -0.624] | -0.684 [-0.749, -0.620] | -0.758 [-0.833, -0.682] | -0.701 [-0.765, -0.636] | -0.742 [-0.813, -0.671] |
+| PLR, PCA + controls | -0.677 [-0.749, -0.605] | -0.689 [-0.757, -0.622] | -0.732 [-0.805, -0.659] | -0.697 [-0.761, -0.632] | -0.715 [-0.783, -0.646] |
+| $\chi^2$ p-value, heterogeneity along clusters (PLR) | 0.0009 | 0.0116 | 0.0020 | 0.0044 | 0.0003 |
+| Robustness value RV (PLR, embeddings + controls) | 0.149 | 0.147 | 0.145 | 0.144 | 0.148 |
+| Own calibration: residual share; upper 90% bound at 1x / 2x | 1.53%; -0.567 / -0.498 | 0.99%; -0.597 / -0.552 | 0.31%; -0.594 / -0.580 | 0.73%; -0.596 / -0.563 | 1.14%; -0.567 / -0.517 |
+| Upper 90% bound at 1x / 2x the main calibration (1.53%, 3.06%) | -0.567 / -0.498 | -0.573 / -0.502 | -0.541 / -0.473 | -0.560 / -0.491 | -0.550 / -0.482 |
+
+The average elasticities are close to those of the main analysis; with the fine-tuned embeddings, the specifications with cluster similarities or principal components give somewhat larger (more negative) elasticities. The heterogeneity along the clusters is significant in all runs. The observed-covariate benchmark of the sensitivity analysis is weaker with the fine-tuned embeddings (its alignment $|\tilde\rho|$ is 0.03 against 0.15), so the own calibration is milder; at the residual shares of the main analysis the bounds are slightly closer to $-0.5$.
+
+Clusters of the main specification (`outputs/R2/cluster_summary_table.csv`; the cluster similarities are re-estimated for every embedding, so the clusters differ from those of the paper):
+
+| Cluster | Label | # Products | Mean price ($) | Median sales rank | Mean rank elasticity |
+| --- | --- | --- | --- | --- | --- |
+| 0 | Fingerboard Parts & Accessories | 552 | 15.15 | 101,650 | -0.507 |
+| 1 | Licensed Character Track Playsets | 771 | 44.41 | 71,219 | -0.810 |
+| 2 | Toddler Carrier Truck Sets | 891 | 27.00 | 64,852 | -0.635 |
+| 3 | 1:64 Collectible Die-Cast | 824 | 14.68 | 89,867 | -0.723 |
+| 4 | Alloy Pull-Back Model Cars | 670 | 22.97 | 90,474 | -0.622 |
