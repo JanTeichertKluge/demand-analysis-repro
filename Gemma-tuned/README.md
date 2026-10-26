@@ -35,7 +35,7 @@ The notebooks in `code/` are generated from those in `gemma/code` (same names; e
 4. `04_evaluation.ipynb`: main specification (text + image, 256 dimensions); additional runs with `txt_only=True` and `emb_dim=768` in `outputs/04_evaluation_comparison/<run>/`.
 5. `02_cluster_summary.ipynb`: cluster table (as Table 9 of the paper), `outputs/R2/cluster_summary_table.csv`.
 6. `04_evaluation_comparison.ipynb`: DoubleMLDeep (main analysis), off-the-shelf EmbeddingGemma 2 (`gemma/`) and the three runs of this folder.
-7. `05_appendix_gemma_tuned.ipynb`: Section 7 of the Online Appendix, `outputs/05_appendix_gemma_tuned/Appendix_Gemma.tex`, from `templates/Appendix_Gemma.tex`: the text of Section 7.1 (off-the-shelf EmbeddingGemma 2) as in the paper, its tables extended by the fine-tuned EmbeddingGemma 2, and Section 7.2 (fine-tuned EmbeddingGemma 2), whose statements are checked against the estimates. The two figures of Section 7.2 in `outputs/05_appendix_gemma_tuned/figures/` are those of `04_evaluation_comparison.ipynb` with the legend labels of the Online Appendix.
+7. `05_appendix_gemma_tuned.ipynb`: Section 7 of the Online Appendix, `outputs/05_appendix_gemma_tuned/Appendix_Gemma.tex`, from `templates/Appendix_Gemma.tex`: the text of Section 7.1 (off-the-shelf EmbeddingGemma 2) as in the paper, its tables extended by the fine-tuned EmbeddingGemma 2, and Section 7.2 (fine-tuned EmbeddingGemma 2), whose statements are checked against the estimates. The figures of Section 7.2 in `outputs/05_appendix_gemma_tuned/figures/` are the collages of `02_cluster_centroid_products.ipynb` and the two figures of `04_evaluation_comparison.ipynb` with the legend labels of the Online Appendix.
 
 Runtime on a 4-core CPU: about 2 h in total.
 

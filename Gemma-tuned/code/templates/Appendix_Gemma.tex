@@ -26,7 +26,7 @@ Cluster 2 & \includegraphics[width=.5\textwidth]{paper/figures_revision/gemma/co
 Cluster 3 & \includegraphics[width=.5\textwidth]{paper/figures_revision/gemma/collage_similarity_cluster_3.png}\\[0.1cm]
 Cluster 4 & \includegraphics[width=.5\textwidth]{paper/figures_revision/gemma/collage_similarity_cluster_4.png}\\[0.1cm]
 \end{tabular}
-\caption{\revised{Products closest to the five cluster centers (EmbeddingGemma~2, Text + Image). The clusters define the similarity features $X^{sim}_i$ used in the remainder of this section.}}
+\caption{\revised{Products closest to the five cluster centers (EmbeddingGemma~2, Text + Image). The clusters define the similarity features $X^{sim}_i$ used in the remainder of this subsection.}}
 \label{fig:gemma_clusters}
 \end{figure}
 
@@ -131,6 +131,19 @@ Scenario & Residual share & Lower & Upper & Lower & Upper\\
 \subsection{Embeddings with Fine-Tuning}\label{app:gemma_ft}
 
 <<ft_setup_text>>
+<<ft_cluster_text>>
+
+\begin{figure}[!htbp]
+\centering
+\linespread{1}\selectfont
+\RevisionBlue
+\footnotesize
+\begin{tabular}{>{\centering\arraybackslash}m{0.12\textwidth} >{\centering\arraybackslash}m{0.52\textwidth}}
+<<ft_cluster_figure_rows>>
+\end{tabular}
+\caption{\revised{Products closest to the five cluster centers (EmbeddingGemma~2 fine-tuned, Text + Image). The clusters define the similarity features $X^{sim}_i$ used in this subsection.}}
+\label{fig:gemma_ft_clusters}
+\end{figure}
 
 <<ft_r2_text>>
 
