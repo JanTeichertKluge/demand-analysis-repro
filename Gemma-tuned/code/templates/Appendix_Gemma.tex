@@ -1,0 +1,164 @@
+% Template of Appendix_Gemma.tex (Online Appendix). Filled in by 05_appendix_gemma_tuned.ipynb; the text of Section 7.1 is that of the
+% paper version of October 2026, the tables and Section 7.2 are generated (<<name>> placeholders) from the estimation outputs.
+\hyphenation{EmbeddingGemma}
+\begingroup
+\setlength{\emergencystretch}{3em}% the model name is not hyphenated
+\section{Robustness Check: EmbeddingGemma~2 Embeddings}\label{app:gemma}
+
+\revised{This section repeats the analysis with EmbeddingGemma~2 embeddings, first without fine-tuning (Section~\ref{app:gemma_off}) and then fine-tuned on our data in the same way as the embeddings of the main analysis (Section~\ref{app:gemma_ft}).}
+
+\subsection{Embeddings without Fine-Tuning}\label{app:gemma_off}
+
+\revised{The workflow is exactly the same as in the main analysis (Section~\ref{app:workflow}), except that the fine-tuning in step~2 is omitted, the embeddings in step~3 are computed with EmbeddingGemma~2 \citep{embeddinggemma2}, and their truncation to 256 coordinates replaces the random projection in Algorithm~\ref{alg:features}. All other steps of Algorithm~\ref{alg:features}, the sample split, the estimation sample, the tabular controls, the learners, and the random seeds are unchanged.}
+
+\revised{EmbeddingGemma~2 is an open multimodal embedding model released by Google DeepMind in October 2026. Built on Gemma 4, it maps text, images, video, and audio into a shared 768-dimensional space. Of its 740M parameters, we use the 270M-parameter text model and the 170M-parameter vision encoder. The description and the image of each product are encoded jointly, with the task prefix for clustering (checkpoint \texttt{google/embeddinggemma-2}, revision \texttt{914f7f8}). As the model is trained with Matryoshka representation learning, we keep the leading 256 coordinates of each embedding and re-normalize them. Unlike the fine-tuned embeddings, these embeddings are not trained on our data and use neither tabular inputs nor the price and quantity signals. The comparison therefore changes the encoders, their inputs, and the fine-tuning at the same time. Figures~\ref{fig:gemma_ate} and \ref{fig:gemma_sorted} and Table~\ref{tab:gemma_chi2} also show two variants: text-only embeddings (256 dimensions) and text and image embeddings with all 768 dimensions.}
+\revised{Figure~\ref{fig:gemma_clusters} shows the four products closest to each of the five cluster centers: toddler construction-truck sets, 1:64 scale die-cast cars, fingerboards, toy train sets, and larger-scale die-cast model cars.}
+
+\begin{figure}[!htbp]
+\centering
+\linespread{1}\selectfont
+\RevisionBlue
+\footnotesize
+\begin{tabular}{>{\centering\arraybackslash}m{0.12\textwidth} >{\centering\arraybackslash}m{0.52\textwidth}}
+Cluster 0 & \includegraphics[width=.5\textwidth]{paper/figures_revision/gemma/collage_similarity_cluster_0.png}\\[0.1cm]
+Cluster 1 & \includegraphics[width=.5\textwidth]{paper/figures_revision/gemma/collage_similarity_cluster_1.png}\\[0.1cm]
+Cluster 2 & \includegraphics[width=.5\textwidth]{paper/figures_revision/gemma/collage_similarity_cluster_2.png}\\[0.1cm]
+Cluster 3 & \includegraphics[width=.5\textwidth]{paper/figures_revision/gemma/collage_similarity_cluster_3.png}\\[0.1cm]
+Cluster 4 & \includegraphics[width=.5\textwidth]{paper/figures_revision/gemma/collage_similarity_cluster_4.png}\\[0.1cm]
+\end{tabular}
+\caption{\revised{Products closest to the five cluster centers (EmbeddingGemma~2, Text + Image). The clusters define the similarity features $X^{sim}_i$ used in the remainder of this section.}}
+\label{fig:gemma_clusters}
+\end{figure}
+
+\revised{Table~\ref{tab:gemma_r2} compares the test $R^2$ of the prediction benchmarks. With all 256 coordinates, boosted trees predict quantity levels better with EmbeddingGemma~2 than with the fine-tuned embeddings (58.77\% vs.\ 55.28\%) and price levels worse (55.54\% vs.\ 65.64\%). Five principal components or cluster similarities of EmbeddingGemma~2 retain much less of the price information than those of the fine-tuned embeddings (37.56\% and 32.23\% vs.\ 64.36\% and 62.53\%, compared with 18.54\% without embeddings).}
+
+\begin{table}[!htbp]
+\centering
+\linespread{1}\selectfont
+\RevisionBlue
+\small
+\caption{\revised{Test $R^2$ scores (in \%) for predicting quantity and price signals: fine-tuned (FT) vs.\ EmbeddingGemma~2 embeddings without (EG) and with fine-tuning (EG-FT).}}
+\label{tab:gemma_r2}
+\resizebox{1\textwidth}{!}{
+\begin{tabular}{lcccccccccccc}
+\toprule
+ & \multicolumn{3}{c}{$Q_{it}$} & \multicolumn{3}{c}{$P_{it}$} & \multicolumn{3}{c}{$\Delta Q_{it}$} & \multicolumn{3}{c}{$\Delta P_{it}$}\\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}
+Method [features] & FT & EG & EG-FT & FT & EG & EG-FT & FT & EG & EG-FT & FT & EG & EG-FT\\
+\midrule
+<<table_r2>>
+\bottomrule
+\end{tabular}
+}
+\caption*{\footnotesize \revised{Note: All models are trained on a training set and scores are evaluated on a test set. Predictions use lagged values of time-varying controls. Negative $R^2$ values are set to $0$. The FT columns repeat the corresponding results of the main text. The EG-FT columns refer to the fine-tuned EmbeddingGemma~2 of Section~\ref{app:gemma_ft}.}}
+\end{table}
+
+\revised{Figure~\ref{fig:gemma_ate} compares the homogeneous estimates across embeddings. With EmbeddingGemma~2 (text and image), the estimates of the specifications with embedding features differ from the fine-tuned ones by at most 0.030, less than one standard error. For Model I-3 with embeddings, the estimate is $-0.701$ (0.046), compared with $-0.697$ (0.049). The 768-dimensional variant gives similar estimates; the text-only variant gives less negative estimates in the boosted-tree specifications with $X^{e}$ ($-0.636$ for Model I-3 with embeddings). All 90\% intervals lie below $-0.5$.}
+
+\begin{figure}[!htbp]
+\centering
+\linespread{1}\selectfont
+\RevisionBlue
+\includegraphics[width=\textwidth]{<<paper_figure_dir>>/ate_estimates_comparison.png}
+\caption{\revised{Estimated homogeneous inverse-rank elasticities and 90\% confidence intervals by embedding.}}
+\caption*{\footnotesize \revised{Note: Left: linear models (Model I-1); right: partially linear models with boosted trees (Model I-3). Labels give the controls: \texttt{lagged} $=(P_{t-1}, Q_{t-1})$, included in all models; \texttt{embeddings}/\texttt{emb} $=X^{e}$, \texttt{sim} $=X^{sim}$, \texttt{pca} $=$ five principal components, \texttt{add\_controls} $=X^{o}_t$. Standard errors are clustered at the product level. The fine-tuned estimates are those of the main analysis.}}
+\label{fig:gemma_ate}
+\end{figure}
+
+\revised{Table~\ref{tab:gemma_chi2} reports joint tests of the cluster similarities as effect modifiers in Models II-1 to II-3. With EmbeddingGemma~2 (text and image), the similarities are jointly significant in all three models, and the same holds for both variants at the 5\% level. The similarities refer to different clusters for each embedding. Figure~\ref{fig:gemma_sorted} compares the sorted effects.}
+
+\begin{table}[!htbp]
+\centering
+\linespread{1}\selectfont
+\RevisionBlue
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{\revised{$p$-values for $\chi^2$-tests of joint significance of the cluster similarities as price effect modifiers, by embedding.}}
+\label{tab:gemma_chi2}
+\resizebox{1\textwidth}{!}{
+\begin{tabular}{lccccccc}
+\toprule
+ & & \multicolumn{3}{c}{EmbeddingGemma~2} & \multicolumn{3}{c}{EmbeddingGemma~2, fine-tuned}\\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+Model & Fine-tuned & \makecell{Text +\\image} & \makecell{Text\\only} & \makecell{Text + image,\\768d} & \makecell{Text +\\image} & \makecell{Text\\only} & \makecell{Text + image,\\768d}\\
+\midrule
+<<table_chi2>>
+\bottomrule
+\end{tabular}
+}
+\caption*{\footnotesize \revised{Note: Similarities only. The joint test of all modifiers gives $p<0.001$ for every model and embedding. Standard errors are clustered at the product level. The column ``Fine-tuned'' repeats the corresponding table of the main text.}}
+\end{table}
+
+\begin{figure}[!htbp]
+\centering
+\linespread{1}\selectfont
+\RevisionBlue
+\includegraphics[width=\textwidth]{<<paper_figure_dir>>/sorted_effects_comparison.png}
+\caption{\revised{Sorted inverse-rank elasticities (Models II-1 to II-3) by embedding.}}
+\caption*{\footnotesize \revised{Note: Fitted conditional effects of the elasticity function, sorted. The fine-tuned curves are those of the main analysis.}}
+\label{fig:gemma_sorted}
+\end{figure}
+
+\revised{Table~\ref{tab:gemma_sensitivity} evaluates Model I-3 with embeddings at the residual shares of Table~\ref{tab:sensitivity_calibrated}. The upper confidence bounds with EmbeddingGemma~2 are comparable to the bounds with fine-tuned results and all are $\leq -0.5$.}
+
+\begin{table}[!htbp]
+\centering
+\linespread{1}\selectfont
+\RevisionBlue
+\caption{\revised{Omitted-confounding scenarios at the residual shares of Table~\ref{tab:sensitivity_calibrated}: fine-tuned vs.\ EmbeddingGemma~2 embeddings without and with fine-tuning.}}
+\label{tab:gemma_sensitivity}
+\begin{tabular}{lccccc}
+\toprule
+ & & \multicolumn{2}{c}{Bias bounds} & \multicolumn{2}{c}{Confidence bounds}\\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Scenario & Residual share & Lower & Upper & Lower & Upper\\
+\midrule
+\multicolumn{6}{l}{\textit{Fine-tuned embeddings} ($\hat\alpha=<<alpha_main>>$)}\\
+<<table_sens_main>>
+\midrule
+\multicolumn{6}{l}{\textit{EmbeddingGemma~2} ($\hat\alpha=<<alpha_gemma>>$)}\\
+<<table_sens_gemma>>
+\midrule
+\multicolumn{6}{l}{\textit{EmbeddingGemma~2, fine-tuned} ($\hat\alpha=<<alpha_tuned>>$)}\\
+<<table_sens_tuned>>
+\bottomrule
+\end{tabular}
+\caption*{\footnotesize \revised{Note: $R_Y^2=R_D^2$ equal to the residual share, with worst-case alignment $|\rho|=1$. The residual shares are the calibration of the main analysis ($r_0=<<r0_main>>$) and its 1.5 and 2 multiples, for all embeddings. The bounds refer to the inverse-rank elasticity of Model I-3 with embeddings. Bias bounds allow for omitted confounding; confidence bounds additionally account for sampling uncertainty (one-sided 90\% bounds). The first panel repeats Table~\ref{tab:sensitivity_calibrated}.}}
+\end{table}
+
+\revised{Overall, the homogeneous elasticities, the joint significance of the cluster similarities, the sorted effects, and the robustness to omitted confounding are similar without fine-tuning. The embeddings differ mainly in their compressed features: the principal components and cluster similarities of the fine-tuned embeddings retain the price information, whereas those of EmbeddingGemma~2 carry much less price information.}
+
+\subsection{Embeddings with Fine-Tuning}\label{app:gemma_ft}
+
+<<ft_setup_text>>
+
+<<ft_r2_text>>
+
+<<ft_ate_text>>
+
+\begin{figure}[!htbp]
+\centering
+\linespread{1}\selectfont
+\RevisionBlue
+\includegraphics[width=\textwidth]{<<paper_figure_dir>>/ate_estimates_comparison_finetuned.png}
+\caption{\revised{Estimated homogeneous inverse-rank elasticities and 90\% confidence intervals: fine-tuned embeddings of the main analysis and EmbeddingGemma~2 without and with fine-tuning.}}
+\caption*{\footnotesize \revised{Note: As in Figure~\ref{fig:gemma_ate}. The estimates of the main analysis and of EmbeddingGemma~2 without fine-tuning (text and image) repeat those of Figure~\ref{fig:gemma_ate}.}}
+\label{fig:gemma_ft_ate}
+\end{figure}
+
+<<ft_het_text>>
+
+\begin{figure}[!htbp]
+\centering
+\linespread{1}\selectfont
+\RevisionBlue
+\includegraphics[width=\textwidth]{<<paper_figure_dir>>/sorted_effects_comparison_finetuned.png}
+\caption{\revised{Sorted inverse-rank elasticities (Models II-1 to II-3): fine-tuned embeddings of the main analysis and EmbeddingGemma~2 without and with fine-tuning.}}
+\caption*{\footnotesize \revised{Note: As in Figure~\ref{fig:gemma_sorted}. The curves of the main analysis and of EmbeddingGemma~2 without fine-tuning (text and image) repeat those of Figure~\ref{fig:gemma_sorted}.}}
+\label{fig:gemma_ft_sorted}
+\end{figure}
+
+<<ft_sens_text>>
+
+<<ft_overall_text>>
+\par\endgroup
