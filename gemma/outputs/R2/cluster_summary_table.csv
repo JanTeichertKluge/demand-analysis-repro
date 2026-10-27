@@ -1,0 +1,6 @@
+Cluster,Label,# Products,# Observations,Mean Price ($),Median Sales Rank,Mean Rating,Median Reviews,Dominant Product Type,Mean Elasticity
+0,Toddler Construction Trucks,864,8199,26.24,64010,4.32,78,Trucks / Residual,-0.624
+1,1:64 Die-Cast Collectibles,978,10815,25.84,117992,4.59,58,Cars & Race Cars / Trucks,-0.801
+2,Wooden Fingerboards,384,4167,16.85,98832,4.36,45,Skateboards / Residual,-0.399
+3,Toy Train Playsets,792,8920,33.99,84755,4.59,268,Train Sets / Trucks,-0.781
+4,Light & Sound Pull-Back Cars,690,5940,19.74,65885,4.48,14,Cars & Race Cars / Residual,-0.669

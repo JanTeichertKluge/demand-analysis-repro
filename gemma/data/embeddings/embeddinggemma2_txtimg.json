@@ -1,0 +1,17 @@
+{
+  "model_id": "google/embeddinggemma-2",
+  "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "modality": "txtimg",
+  "prompt": "task: clustering | query: ",
+  "input_format": "PROMPT + text + ' <|image|>' (image interleaved after text)",
+  "vision_soft_tokens_per_image": 280,
+  "dtype": "bfloat16",
+  "pooling": "mean (model default), L2-normalized in float32",
+  "embedding_dim": 768,
+  "n_products": 7549,
+  "torch": "2.14.1+cu130",
+  "transformers": "5.19.0",
+  "sentence_transformers": "6.1.0",
+  "python": "3.11.17",
+  "machine": "x86_64"
+}

@@ -1,0 +1,80 @@
+{
+  "config": {
+    "modality": "txtimg",
+    "emb_dim": 256,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "lora_vision": true,
+    "head_hidden": 128,
+    "batch_size": 16,
+    "eval_batch_size": 32,
+    "lr_lora": 0.0001,
+    "lr_head": 0.001,
+    "weight_decay": 0.01,
+    "max_epochs": 20,
+    "early_stopping_patience": 4,
+    "early_stopping_min_delta": 0.0001,
+    "lr_factor": 0.1,
+    "lr_patience": 1,
+    "grad_clip": 1.0,
+    "gradient_checkpointing": true,
+    "dtype": "auto",
+    "seed": 42,
+    "num_workers": 2,
+    "max_train_products": null,
+    "max_val_products": null,
+    "max_steps_per_epoch": null,
+    "max_export_products": null
+  },
+  "environments": [
+    {
+      "python": "3.13.15",
+      "torch": "2.11.0+cu130",
+      "transformers": "5.19.0",
+      "sentence_transformers": "6.1.0",
+      "peft": "0.21.2",
+      "device": "cuda",
+      "dtype": "bfloat16",
+      "gpu": "NVIDIA A100-SXM4-40GB",
+      "started": "2026-10-21 16:06:49"
+    },
+    {
+      "python": "3.13.15",
+      "torch": "2.11.0+cu130",
+      "transformers": "5.19.0",
+      "sentence_transformers": "6.1.0",
+      "peft": "0.21.2",
+      "device": "cuda",
+      "dtype": "bfloat16",
+      "gpu": "NVIDIA A100-SXM4-80GB",
+      "started": "2026-10-21 17:05:12"
+    },
+    {
+      "python": "3.13.15",
+      "torch": "2.11.0+cu130",
+      "transformers": "5.19.0",
+      "sentence_transformers": "6.1.0",
+      "peft": "0.21.2",
+      "device": "cuda",
+      "dtype": "bfloat16",
+      "gpu": "NVIDIA A100-SXM4-80GB",
+      "started": "2026-10-21 19:38:25"
+    },
+    {
+      "python": "3.13.15",
+      "torch": "2.11.0+cu130",
+      "transformers": "5.19.0",
+      "sentence_transformers": "6.1.0",
+      "peft": "0.21.2",
+      "device": "cuda",
+      "dtype": "bfloat16",
+      "gpu": "NVIDIA A100-SXM4-80GB",
+      "started": "2026-10-21 20:50:03"
+    }
+  ],
+  "n_trainable": 9634818,
+  "model_id": "google/embeddinggemma-2",
+  "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "prompt": "task: clustering | query: "
+}

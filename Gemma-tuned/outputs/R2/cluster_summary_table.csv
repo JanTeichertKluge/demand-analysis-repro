@@ -1,0 +1,6 @@
+Cluster,Label,# Products,# Observations,Mean Price ($),Median Sales Rank,Mean Rating,Median Reviews,Dominant Product Type,Mean Elasticity
+0,Fingerboard Parts & Accessories,552,5976,15.15,101650,4.42,50,Skateboards / Train Sets,-0.507
+1,Licensed Character Track Playsets,771,8984,44.41,71219,4.58,408,Trucks / Residual,-0.81
+2,Toddler Carrier Truck Sets,891,8327,27.0,64852,4.36,72,Trucks / Train Sets,-0.635
+3,1:64 Collectible Die-Cast,824,8184,14.68,89867,4.58,19,Cars & Race Cars / Trucks,-0.723
+4,Alloy Pull-Back Model Cars,670,6570,22.97,90474,4.48,23,Cars & Race Cars / Residual,-0.622

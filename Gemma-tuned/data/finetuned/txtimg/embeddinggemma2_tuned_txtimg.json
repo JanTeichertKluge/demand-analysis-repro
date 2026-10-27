@@ -1,0 +1,66 @@
+{
+  "model_id": "google/embeddinggemma-2",
+  "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "modality": "txtimg",
+  "prompt": "task: clustering | query: ",
+  "fine_tuning": "LoRA, DoubleMLDeep loss RMSE(Q)*RMSE(P) on I_1, epoch selected on I_2",
+  "head_input": "Matryoshka truncation to 256 dimensions, L2-normalized",
+  "embedding_dim": 768,
+  "n_products": 7549,
+  "best_epoch": 20,
+  "best_val_loss": 0.29663966884806714,
+  "loss_by_split": {
+    "train": {
+      "rmse_Q_t": 0.4996888932795762,
+      "r2_Q_t": 0.8524183707699711,
+      "rmse_P_bb_t": 0.11214364311506536,
+      "r2_P_bb_t": 0.9677959568827361,
+      "loss": 0.05603693291650678
+    },
+    "val": {
+      "rmse_Q_t": 0.9419016417729469,
+      "r2_Q_t": 0.4884590533974399,
+      "rmse_P_bb_t": 0.31493699096829325,
+      "r2_P_bb_t": 0.7426247731924855,
+      "loss": 0.29663966884806714
+    }
+  },
+  "config": {
+    "modality": "txtimg",
+    "emb_dim": 256,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "lora_vision": true,
+    "head_hidden": 128,
+    "batch_size": 16,
+    "eval_batch_size": 32,
+    "lr_lora": 0.0001,
+    "lr_head": 0.001,
+    "weight_decay": 0.01,
+    "max_epochs": 20,
+    "early_stopping_patience": 4,
+    "early_stopping_min_delta": 0.0001,
+    "lr_factor": 0.1,
+    "lr_patience": 1,
+    "grad_clip": 1.0,
+    "gradient_checkpointing": true,
+    "dtype": "auto",
+    "seed": 42,
+    "num_workers": 2,
+    "max_train_products": null,
+    "max_val_products": null,
+    "max_steps_per_epoch": null,
+    "max_export_products": null
+  },
+  "environment": {
+    "python": "3.13.15",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.19.0",
+    "sentence_transformers": "6.1.0",
+    "peft": "0.21.2",
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "gpu": "NVIDIA A100-SXM4-80GB"
+  }
+}

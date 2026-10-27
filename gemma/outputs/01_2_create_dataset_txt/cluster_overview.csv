@@ -1,0 +1,11 @@
+embedding,cluster,# Products,Top product types
+finetuned,0,1916,Cars & Race Cars (40%) / Skateboards (21%) / Residual (14%)
+finetuned,1,1570,Residual (23%) / Trucks (21%) / Cars & Race Cars (19%)
+finetuned,2,1364,Cars & Race Cars (48%) / Trucks (14%) / Residual (10%)
+finetuned,3,1275,Cars & Race Cars (35%) / Residual (23%) / Trucks (15%)
+finetuned,4,1424,Trucks (30%) / Cars & Race Cars (17%) / Residual (13%)
+gemma_txt_dim256,0,2068,Cars & Race Cars (48%) / Trucks (20%) / Residual (17%)
+gemma_txt_dim256,1,1488,Cars & Race Cars (71%) / Residual (14%) / Trucks (9%)
+gemma_txt_dim256,2,1476,Train Sets (31%) / Trucks (20%) / Residual (16%)
+gemma_txt_dim256,3,1753,Trucks (31%) / Residual (21%) / Cars & Race Cars (17%)
+gemma_txt_dim256,4,764,Skateboards (87%) / Residual (9%) / Vehicle Playsets (1%)
